@@ -21,7 +21,7 @@ async def weather(ctx, *, request_loc : str):
         'cache-control': "no-cache",
         }
 
-    print("User requested for:" + request_loc)
+    print(ctx.message.author.name + " requested for:" + request_loc)
     if(len(request_loc.split(" ")) > 1):
         request_loc = request_loc.replace(" ","%20")
 
@@ -38,24 +38,38 @@ async def weather(ctx, *, request_loc : str):
 
     # Get the weather conditions for the day
     conn = http.client.HTTPConnection("api.wunderground.com")
-    conn.request("GET", "/api/{apikey}/conditions/{location}.json".format(apikey=wunder_token,location=cityUrl), headers=headers)
+    conn.request("GET", "/api/{apikey}/conditions/{location}.json"
+            .format(apikey=wunder_token,
+                    location=cityUrl),
+                    headers=headers)
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
     weather_f = weather_response["current_observation"]["temp_f"]
+    feels_f = weather_response["current_observation"]["feelslike_f"]
+    humidity = weather_response["current_observation"]["relative_humidity"]
     
     # Get some "nice text" for forecast
     conn = http.client.HTTPConnection("api.wunderground.com")
-    conn.request("GET", "/api/{apikey}/forecast/{location}.json".format(apikey=wunder_token,location=cityUrl), headers=headers)
+    conn.request("GET", "/api/{apikey}/forecast/{location}.json"
+            .format(apikey=wunder_token,
+                    location=cityUrl), 
+                    headers=headers)
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
-    weather_fct = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
+    forecast = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
+    fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
+    fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
 
     # Output all of it
-    await client.say("The weather in {city} is {temp} degrees F.{forecast}"
+    await client.say("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity.\n Today's forecast: {tf}. Tomorrow:{f1} \n The day after: {f2} ."
             .format(city=cityName, 
                     temp=weather_f,
-                    forecast=weather_fct))
+                    feel_f=feels_f,
+                    f1=fore1,
+                    f2=fore2,
+                    hum=humidity,
+                    tf=forecast))
 
 client.run(discord_token)
