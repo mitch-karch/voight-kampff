@@ -25,6 +25,7 @@ async def weather(ctx, *, request_loc : str):
     if(len(request_loc.split(" ")) > 1):
         request_loc = request_loc.replace(" ","%20")
 
+    # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPConnection("autocomplete.wunderground.com")
     conn.request("GET", "/aq?query={loc}".format(loc=request_loc), headers=headers)
     res = conn.getresponse()
@@ -35,6 +36,7 @@ async def weather(ctx, *, request_loc : str):
 
     print("autoCompleted to:" + cityName)
 
+    # Get the weather conditions for the day
     conn = http.client.HTTPConnection("api.wunderground.com")
     conn.request("GET", "/api/{apikey}/conditions/{location}.json".format(apikey=wunder_token,location=cityUrl), headers=headers)
     res = conn.getresponse()
@@ -42,6 +44,18 @@ async def weather(ctx, *, request_loc : str):
     weather_response = json.loads(data)
     weather_f = weather_response["current_observation"]["temp_f"]
     
-    await client.say("The weather in {city} is {temp} degrees F".format(city=cityName, temp=weather_f))
+    # Get some "nice text" for forecast
+    conn = http.client.HTTPConnection("api.wunderground.com")
+    conn.request("GET", "/api/{apikey}/forecast/{location}.json".format(apikey=wunder_token,location=cityUrl), headers=headers)
+    res = conn.getresponse()
+    data = res.read()
+    weather_response = json.loads(data)
+    weather_fct = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
+
+    # Output all of it
+    await client.say("The weather in {city} is {temp} degrees F.{forecast}"
+            .format(city=cityName, 
+                    temp=weather_f,
+                    forecast=weather_fct))
 
 client.run(discord_token)
