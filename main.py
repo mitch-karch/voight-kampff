@@ -58,18 +58,18 @@ async def weather(ctx, *, request_loc : str):
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
-    forecast = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
+    fore0 = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
     fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
     fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
 
     # Output all of it
-    await client.say("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity.\n Today's forecast: {tf}. Tomorrow:{f1} \n The day after: {f2} ."
+    await client.say("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity.\nToday's forecast: {tf}.\nTomorrow:{f1} \nThe day after: {f2}"
             .format(city=cityName, 
                     temp=weather_f,
                     feel_f=feels_f,
                     f1=fore1,
                     f2=fore2,
                     hum=humidity,
-                    tf=forecast))
+                    tf=fore0))
 
 client.run(discord_token)
