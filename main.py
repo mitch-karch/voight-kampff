@@ -5,6 +5,9 @@ import json
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
+headers = {
+    'cache-control': "no-cache",
+}
 
 @client.event
 async def on_ready():
@@ -17,9 +20,6 @@ async def on_ready():
                 pass_context=True,
                 aliases=['w','weather'])
 async def weather(ctx, *, request_loc : str):
-    headers = {
-        'cache-control': "no-cache",
-        }
 
     print(ctx.message.author.name + " requested for weather:" + request_loc)
     if(len(request_loc.split(" ")) > 1):
@@ -86,9 +86,6 @@ async def weather(ctx, *, request_loc : str):
                 pass_context=True,
                 aliases=['ud','urban'])
 async def stocks(ctx, *, request_def : str):
-    headers = {
-        'cache-control': "no-cache",
-        }
 
     print(ctx.message.author.name + " requested for definition:" + request_def)
     if(len(request_def.split(" ")) > 1):
@@ -118,9 +115,43 @@ async def stocks(ctx, *, request_def : str):
                 description="d_message",
                 brief="d_message",
                 pass_context=True,
-                aliases=['d','dd'])
+                aliases=['d','D'])
 async def d_message(ctx):
     print(ctx.message.author.name + " requested for d")
     await client.say("d")
+
+
+@client.command(name="Reddit Top",
+                description="Gives top three posts of reddit",
+                brief="reddit",
+                pass_context=True,
+                aliases=['r','reddit'])
+async def reddit_top(ctx, *, request: str ):
+    print(ctx.message.author.name + " requested for reddit" + request)
+    conn = http.client.HTTPSConnection("www.reddit.com")
+    conn.request("GET", "/r/{stk}/top/.json?limit=3".format(stk=request), headers=headers)
+    res = conn.getresponse()
+    data = res.read().decode("utf-8")
+    json_response = json.loads(data)
+    
+    tops = json_response["data"]["children"]
+    constructedString = ("__Top 3 posts: ***r/{full}***__\n"
+                        "\n"
+                        "1.{t0} <{t0u}>\n"
+                        "2.{t1} <{t1u}>\n"
+                        "3.{t2} <{t2u}>\n"
+                        )
+    await client.say(constructedString.format(
+                        full=tops[0]["data"]["subreddit"], 
+                        t0=tops[0]["data"]["title"],
+                        t1=tops[1]["data"]["title"],
+                        t2=tops[2]["data"]["title"],
+                        t0u=tops[0]["data"]["url"],
+                        t1u=tops[1]["data"]["url"],
+                        t2u=tops[2]["data"]["url"]
+                        )
+                    )
+
+#Notes: Add youtube song play voice channel.
 
 client.run(discord_token)
