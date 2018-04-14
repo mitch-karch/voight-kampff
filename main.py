@@ -80,38 +80,47 @@ async def weather(ctx, *, request_loc : str):
                         tf=fore0)
                     )
 
-@client.command(name="Stocks",
-                description="Gives daily stock information",
-                brief="Give stocks",
+@client.command(name="Urban Dictionary",
+                description="Gives urban definitions",
+                brief="Give ud",
                 pass_context=True,
-                aliases=['$','price'])
-async def stocks(ctx, *, request_stock : str):
+                aliases=['ud','urban'])
+async def stocks(ctx, *, request_def : str):
     headers = {
         'cache-control': "no-cache",
         }
 
-    print(ctx.message.author.name + " requested for stock:" + request_stock)
-    if(len(request_stock.split(" ")) > 1):
-        request_stock = request_stock.replace(" ","%20")
+    print(ctx.message.author.name + " requested for definition:" + request_def)
+    if(len(request_def.split(" ")) > 1):
+        request_def = request_def.replace(" ","%20")
 
     # Try to figure out where the user wanted to get info from
-    conn = http.client.HTTPSConnection("api.iextrading.com")
-    conn.request("GET", "/1.0/stock/{stk}/batch?types=quote".format(stk=request_stock), headers=headers)
+    conn = http.client.HTTPSConnection("api.urbandictionary.com")
+    conn.request("GET", "/v0/define?term={stk}".format(stk=request_def), headers=headers)
     res = conn.getresponse()
     data = res.read().decode("utf-8")
     json_response = json.loads(data)
-    latestPrice = json_response["quote"]["latestPrice"]
-    symbol = json_response["quote"]["symbol"]
-    companyName = json_response["quote"]["companyName"]
+    definitions = json_response["list"]
 
-    print("Stock is:" + companyName)
-    constructedString = ("**{full}** (Symbol: *{short}*): ${last} \n"
-                        "\t")
+    print("Urban Dictionary is:" + definitions[0]["word"])
+    constructedString = ("__Urban Dictionary: ***{full}***__\n"
+                        "\n"
+                        "{defn}\n"
+                        "*{example}*"
+                        )
     await client.say(constructedString.format(
-                        full=companyName, 
-                        short=symbol, 
-                        last=latestPrice
+                        defn=definitions[0]["definition"], 
+                        full=definitions[0]["word"], 
+                        example=definitions[0]["example"]
                         )
                     )
+@client.command(name="d_message",
+                description="d_message",
+                brief="d_message",
+                pass_context=True,
+                aliases=['d','dd'])
+async def d_message(ctx):
+    print(ctx.message.author.name + " requested for d")
+    await client.say("d")
 
 client.run(discord_token)
