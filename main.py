@@ -21,7 +21,7 @@ async def weather(ctx, *, request_loc : str):
         'cache-control': "no-cache",
         }
 
-    print(ctx.message.author.name + " requested for:" + request_loc)
+    print(ctx.message.author.name + " requested for weather:" + request_loc)
     if(len(request_loc.split(" ")) > 1):
         request_loc = request_loc.replace(" ","%20")
 
@@ -48,6 +48,7 @@ async def weather(ctx, *, request_loc : str):
     weather_f = weather_response["current_observation"]["temp_f"]
     feels_f = weather_response["current_observation"]["feelslike_f"]
     humidity = weather_response["current_observation"]["relative_humidity"]
+    dewpoint = weather_response["current_observation"]["dewpoint_f"]
     
     # Get some "nice text" for forecast
     conn = http.client.HTTPConnection("api.wunderground.com")
@@ -61,15 +62,56 @@ async def weather(ctx, *, request_loc : str):
     fore0 = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
     fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
     fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
+    constructedString = ("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n"
+                        "\n"
+                        "Today's forecast:{tf}.\n"
+                        "Tomorrow:{f1}\n"
+                        "The day after:{f2}\n")
 
     # Output all of it
-    await client.say("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity.\nToday's forecast: {tf}.\nTomorrow:{f1} \nThe day after: {f2}"
-            .format(city=cityName, 
-                    temp=weather_f,
-                    feel_f=feels_f,
-                    f1=fore1,
-                    f2=fore2,
-                    hum=humidity,
-                    tf=fore0))
+    await client.say(constructedString.format(
+                        city=cityName, 
+                        temp=weather_f,
+                        feel_f=feels_f,
+                        f1=fore1,
+                        f2=fore2,
+                        dew=dewpoint,
+                        hum=humidity,
+                        tf=fore0)
+                    )
+
+@client.command(name="Stocks",
+                description="Gives daily stock information",
+                brief="Give stocks",
+                pass_context=True,
+                aliases=['$','price'])
+async def stocks(ctx, *, request_stock : str):
+    headers = {
+        'cache-control': "no-cache",
+        }
+
+    print(ctx.message.author.name + " requested for stock:" + request_stock)
+    if(len(request_stock.split(" ")) > 1):
+        request_stock = request_stock.replace(" ","%20")
+
+    # Try to figure out where the user wanted to get info from
+    conn = http.client.HTTPSConnection("api.iextrading.com")
+    conn.request("GET", "/1.0/stock/{stk}/batch?types=quote".format(stk=request_stock), headers=headers)
+    res = conn.getresponse()
+    data = res.read().decode("utf-8")
+    json_response = json.loads(data)
+    latestPrice = json_response["quote"]["latestPrice"]
+    symbol = json_response["quote"]["symbol"]
+    companyName = json_response["quote"]["companyName"]
+
+    print("Stock is:" + companyName)
+    constructedString = ("**{full}** (Symbol: *{short}*): ${last} \n"
+                        "\t")
+    await client.say(constructedString.format(
+                        full=companyName, 
+                        short=symbol, 
+                        last=latestPrice
+                        )
+                    )
 
 client.run(discord_token)
