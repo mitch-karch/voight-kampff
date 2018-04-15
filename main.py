@@ -20,16 +20,15 @@ async def on_ready():
                 pass_context=True,
                 aliases=['w','weather'])
 async def weather(ctx, *, request_location : str):
-
     print(ctx.message.author.name + " requested for weather:" + request_location)
+
     if(len(request_location.split(" ")) > 1):
         request_location = request_location.replace(" ","%20")
 
     # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPConnection("autocomplete.wunderground.com")
     conn.request("GET", "/aq?query={loc}".format(loc=request_location), headers=headers)
-    res = conn.getresponse().read().decode("utf-8")
-    json_response = json.loads(res)
+    json_response = json.loads(conn.getresponse().read().decode("utf-8"))
     cityUrl = json_response["RESULTS"][0]["l"]
     cityName = json_response["RESULTS"][0]["name"]
 
@@ -93,9 +92,7 @@ async def urbanDict(ctx, *, request_definition : str):
     # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPSConnection("api.urbandictionary.com")
     conn.request("GET", "/v0/define?term={stk}".format(stk=request_definition), headers=headers)
-    res = conn.getresponse()
-    data = res.read().decode("utf-8")
-    json_response = json.loads(data)
+    json_response = json.loads(conn.getresponse().read().decode("utf-8"))
     definitions = json_response["list"]
 
     print("Urban Dictionary is:" + definitions[0]["word"])
@@ -129,9 +126,7 @@ async def reddit_top(ctx, *, request_subreddit: str ):
     print(ctx.message.author.name + " request_subreddited for reddit" + request_subreddit)
     conn = http.client.HTTPSConnection("www.reddit.com")
     conn.request("GET", "/r/{stk}/top/.json?limit=3".format(stk=request_subreddit), headers=headers)
-    res = conn.getresponse()
-    data = res.read().decode("utf-8")
-    json_response = json.loads(data)
+    json_response = json.loads(conn.getresponse().read().decode("utf-8"))
     
     tops = json_response["data"]["children"]
     constructedString = ("__Top 3 posts: ***r/{full}***__\n"
@@ -159,20 +154,14 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                 pass_context=True,
                 aliases=['$','price'])
 async def stocks(ctx, *, request_stock : str):
-    headers = {
-        'cache-control': "no-cache",
-        }
-
     print(ctx.message.author.name + " requested for stock:" + request_stock)
     if(len(request_stock.split(" ")) > 1):
         request_stock = request_stock.replace(" ","%20")
-
-    # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPSConnection("api.iextrading.com")
     conn.request("GET", "/1.0/stock/{stk}/batch?types=quote,news".format(stk=request_stock), headers=headers)
-    res = conn.getresponse()
-    data = res.read().decode("utf-8")
-    json_response = json.loads(data)
+
+    json_response = json.loads(conn.getresponse().read().decode("utf-8"))
+
     latestPrice = json_response["quote"]["latestPrice"]
     symbol = json_response["quote"]["symbol"]
     companyName = json_response["quote"]["companyName"]
@@ -180,7 +169,7 @@ async def stocks(ctx, *, request_stock : str):
     companyNews = json_response["news"]
 
     print("Stock is:" + companyName)
-    constructedString = ("**{full}** (Symbol: *{short}*): ${last} ({pChange}) \n"
+    constructedString = ("**{full}** (Symbol: *{short}*): ${last} ({pChange}%) \n"
                         "\n"
                         "__News for {full}:__\n"
                         "\n"
