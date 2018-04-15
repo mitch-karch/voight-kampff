@@ -19,18 +19,17 @@ async def on_ready():
                 brief="Give Weather",
                 pass_context=True,
                 aliases=['w','weather'])
-async def weather(ctx, *, request_loc : str):
+async def weather(ctx, *, request_location : str):
 
-    print(ctx.message.author.name + " requested for weather:" + request_loc)
-    if(len(request_loc.split(" ")) > 1):
-        request_loc = request_loc.replace(" ","%20")
+    print(ctx.message.author.name + " requested for weather:" + request_location)
+    if(len(request_location.split(" ")) > 1):
+        request_location = request_location.replace(" ","%20")
 
     # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPConnection("autocomplete.wunderground.com")
-    conn.request("GET", "/aq?query={loc}".format(loc=request_loc), headers=headers)
-    res = conn.getresponse()
-    data = res.read().decode("utf-8")
-    json_response = json.loads(data)
+    conn.request("GET", "/aq?query={loc}".format(loc=request_location), headers=headers)
+    res = conn.getresponse().read().decode("utf-8")
+    json_response = json.loads(res)
     cityUrl = json_response["RESULTS"][0]["l"]
     cityName = json_response["RESULTS"][0]["name"]
 
@@ -64,9 +63,9 @@ async def weather(ctx, *, request_loc : str):
     fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
     constructedString = ("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n"
                         "\n"
-                        "Today's forecast:{tf}.\n"
-                        "Tomorrow:{f1}\n"
-                        "The day after:{f2}\n")
+                        "Today's forecast: {tf}.\n"
+                        "Tomorrow: {f1}\n"
+                        "The day after: {f2}\n")
 
     # Output all of it
     await client.say(constructedString.format(
@@ -85,15 +84,15 @@ async def weather(ctx, *, request_loc : str):
                 brief="Give ud",
                 pass_context=True,
                 aliases=['ud','urban'])
-async def stocks(ctx, *, request_def : str):
+async def urbanDict(ctx, *, request_definition : str):
 
-    print(ctx.message.author.name + " requested for definition:" + request_def)
-    if(len(request_def.split(" ")) > 1):
-        request_def = request_def.replace(" ","%20")
+    print(ctx.message.author.name + " requested for definition:" + request_definition)
+    if(len(request_definition.split(" ")) > 1):
+        request_definition = request_definition.replace(" ","%20")
 
     # Try to figure out where the user wanted to get info from
     conn = http.client.HTTPSConnection("api.urbandictionary.com")
-    conn.request("GET", "/v0/define?term={stk}".format(stk=request_def), headers=headers)
+    conn.request("GET", "/v0/define?term={stk}".format(stk=request_definition), headers=headers)
     res = conn.getresponse()
     data = res.read().decode("utf-8")
     json_response = json.loads(data)
@@ -126,10 +125,10 @@ async def d_message(ctx):
                 brief="reddit",
                 pass_context=True,
                 aliases=['r','reddit'])
-async def reddit_top(ctx, *, request: str ):
-    print(ctx.message.author.name + " requested for reddit" + request)
+async def reddit_top(ctx, *, request_subreddit: str ):
+    print(ctx.message.author.name + " request_subreddited for reddit" + request_subreddit)
     conn = http.client.HTTPSConnection("www.reddit.com")
-    conn.request("GET", "/r/{stk}/top/.json?limit=3".format(stk=request), headers=headers)
+    conn.request("GET", "/r/{stk}/top/.json?limit=3".format(stk=request_subreddit), headers=headers)
     res = conn.getresponse()
     data = res.read().decode("utf-8")
     json_response = json.loads(data)
@@ -154,4 +153,52 @@ async def reddit_top(ctx, *, request: str ):
 
 #Notes: Add youtube song play voice channel.
 
+@client.command(name="Stocks",
+                description="Gives daily stock information",
+                brief="Give stocks",
+                pass_context=True,
+                aliases=['$','price'])
+async def stocks(ctx, *, request_stock : str):
+    headers = {
+        'cache-control': "no-cache",
+        }
+
+    print(ctx.message.author.name + " requested for stock:" + request_stock)
+    if(len(request_stock.split(" ")) > 1):
+        request_stock = request_stock.replace(" ","%20")
+
+    # Try to figure out where the user wanted to get info from
+    conn = http.client.HTTPSConnection("api.iextrading.com")
+    conn.request("GET", "/1.0/stock/{stk}/batch?types=quote,news".format(stk=request_stock), headers=headers)
+    res = conn.getresponse()
+    data = res.read().decode("utf-8")
+    json_response = json.loads(data)
+    latestPrice = json_response["quote"]["latestPrice"]
+    symbol = json_response["quote"]["symbol"]
+    companyName = json_response["quote"]["companyName"]
+    companyQuote = json_response["quote"]
+    companyNews = json_response["news"]
+
+    print("Stock is:" + companyName)
+    constructedString = ("**{full}** (Symbol: *{short}*): ${last} ({pChange}) \n"
+                        "\n"
+                        "__News for {full}:__\n"
+                        "\n"
+                        "{n0}: <{n0u}>\n"
+                        "{n1}: <{n1u}>\n"
+                        "{n2}: <{n2u}>\n"
+                        )
+    await client.say(constructedString.format(
+                        full=companyName, 
+                        short=symbol, 
+                        last=latestPrice,
+                        n0=companyNews[0]["headline"],
+                        n1=companyNews[1]["headline"],
+                        n2=companyNews[2]["headline"],
+                        n0u=companyNews[0]["url"],
+                        n1u=companyNews[1]["url"],
+                        n2u=companyNews[2]["url"],
+                        pChange=companyQuote["changePercent"]
+                        )
+                    )
 client.run(discord_token)
