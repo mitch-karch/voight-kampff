@@ -2,6 +2,7 @@ from lorem import discord_token, wunder_token
 from discord.ext.commands import Bot
 import http.client
 import json
+import random
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
