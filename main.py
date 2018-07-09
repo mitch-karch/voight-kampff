@@ -155,7 +155,7 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                 aliases=['au','AU','aug', 'augund','autier'])
 async def au_tier(ctx, *, word : str):
     print(ctx.message.author.name + " requested for au of" + word)
-    constructedString = "**{w}** is *{c}* aug und tier"
+    constructedString = "**{w}** __{c}__ aug und tier"
     coinF = "is" if random.randint(1,2) == 1 else "is not"
     await client.say(constructedString.format(c=coinF,w=word))
 
