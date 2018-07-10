@@ -167,7 +167,7 @@ async def au_tier(ctx, *, word : str):
         auWord = random.choice([True,False])
         augLibrary[word] = auWord
     with open('dict.txt', 'w') as f:
-        file.write(json.dumps(augLibrary))
+        f.write(json.dumps(augLibrary))
     coinF = "is" if auWord else "is not"
     constructedString = "**{w}** __{c}__ aug und tier"
     await client.say(constructedString.format(c=coinF,w=word))
