@@ -10,6 +10,11 @@ headers = {
     'cache-control': "no-cache",
 }
 
+augLibrary = {"sakai":True}
+
+with open('dict.txt', 'r') as f:
+    augLibrary = json.load(f)
+
 @client.event
 async def on_ready():
     print("Logged in as " + client.user.name)
@@ -147,7 +152,6 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                         )
                     )
 
-#Notes: Add youtube song play voice channel.
 @client.command(name="aug und",
                 description="What's Aug Und Tier",
                 brief="au",
@@ -155,8 +159,17 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                 aliases=['au','AU','aug', 'augund','autier'])
 async def au_tier(ctx, *, word : str):
     print(ctx.message.author.name + " requested for au of" + word)
+    #Check for existing value in dict
+    auWord=False;
+    if word in augLibrary:
+        auWord = augLibrary[word]
+    else
+        auWord = random.choice([True,False])
+        augLibrary[word] = auWord
+    with open('dict.txt', 'w') as f:
+        file.write(json.dumps(augLibrary))
+    coinF = "is" if auWord else "is not"
     constructedString = "**{w}** __{c}__ aug und tier"
-    coinF = "is" if random.randint(1,2) == 1 else "is not"
     await client.say(constructedString.format(c=coinF,w=word))
 
 @client.command(name="Stocks",
