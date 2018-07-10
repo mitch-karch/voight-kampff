@@ -163,7 +163,7 @@ async def au_tier(ctx, *, word : str):
     auWord=False;
     if word in augLibrary:
         auWord = augLibrary[word]
-    else
+    else:
         auWord = random.choice([True,False])
         augLibrary[word] = auWord
     with open('dict.txt', 'w') as f:
