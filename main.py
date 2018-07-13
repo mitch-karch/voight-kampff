@@ -12,7 +12,7 @@ headers = {
 
 augLibrary = {"sakai":True}
 
-with open('dict.txt', 'r') as f:
+with open('dict.json', 'r') as f:
     augLibrary = json.load(f)
 
 @client.event
@@ -166,7 +166,7 @@ async def au_tier(ctx, *, word : str):
     else:
         auWord = random.choice([True,False])
         augLibrary[word] = auWord
-    with open('dict.txt', 'w') as f:
+    with open('dict.json', 'w') as f:
         f.write(json.dumps(augLibrary))
     coinF = "is" if auWord else "is not"
     constructedString = "**{w}** __{c}__ aug und tier"
