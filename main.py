@@ -1,5 +1,6 @@
 from lorem import discord_token, wunder_token
 from discord.ext.commands import Bot
+import discord
 import http.client
 import json
 import random
@@ -92,6 +93,7 @@ async def weather(ctx, *, request_location : str):
 async def urbanDict(ctx, *, request_definition : str):
 
     print(ctx.message.author.name + " requested for definition:" + request_definition)
+    char_lim=1000
     if(len(request_definition.split(" ")) > 1):
         request_definition = request_definition.replace(" ","%20")
 
@@ -100,6 +102,7 @@ async def urbanDict(ctx, *, request_definition : str):
     conn.request("GET", "/v0/define?term={stk}".format(stk=request_definition), headers=headers)
     json_response = json.loads(conn.getresponse().read().decode("utf-8"))
     definitions = json_response["list"]
+    print(definitions[0]["definition"]);
 
     print("Urban Dictionary is:" + definitions[0]["word"])
     constructedString = ("__Urban Dictionary: ***{full}***__\n"
@@ -108,9 +111,9 @@ async def urbanDict(ctx, *, request_definition : str):
                         "*{example}*"
                         )
     await client.say(constructedString.format(
-                        defn=definitions[0]["definition"], 
+                        defn=(definitions[0]["definition"][:char_lim] + "__[truncated]__") if len(definitions[0]["definition"]) > char_lim else definitions[0]["definition"], 
                         full=definitions[0]["word"], 
-                        example=definitions[0]["example"]
+                        example=(definitions[0]["example"][:char_lim] + "__[truncated]__") if len(definitions[0]["example"]) > char_lim else definitions[0]["example"], 
                         )
                     )
 @client.command(name="d_message",
@@ -141,6 +144,16 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                         "2.{t1} <{t1u}>\n"
                         "3.{t2} <{t2u}>\n"
                         )
+    em = discord.Embed(title="Top posts",
+                        description= \
+                            "1. ["+tops[0]['data']['title']+"]("+tops[0]['data']['url']+") | [comments](https://www.reddit.com"+tops[0]['data']['permalink']+")\n" + \
+                            "2. ["+tops[1]['data']['title']+"]("+tops[1]['data']['url']+") | [comments](https://www.reddit.com"+tops[0]['data']['permalink']+")\n" + \
+                            "3. ["+tops[2]['data']['title']+"]("+tops[2]['data']['url']+") | [comments](https://www.reddit.com"+tops[0]['data']['permalink']+")\n",
+                        colour=0x0000FF)
+    await client.send_message(ctx.message.channel, embed=em)
+    """
+    em.set_author(name="Top 3 subreddit posts: r/", url="www.reddit.com/r/",icon_url="https://cdn.discordapp.com/embed/avatars/0.png") 
+    em.set_author(name="Top 3 subreddit posts: r/"+tops[0]["data"]["subreddit"], url="www.reddit.com/r/"+tops[0]["data"]["subreddit"],icon_url=client.user.default_avatar_url) 
     await client.say(constructedString.format(
                         full=tops[0]["data"]["subreddit"], 
                         t0=tops[0]["data"]["title"],
@@ -151,6 +164,7 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                         t2u=tops[2]["data"]["url"]
                         )
                     )
+    """
 
 @client.command(name="aug und",
                 description="What's Aug Und Tier",
