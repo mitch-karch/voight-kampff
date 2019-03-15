@@ -65,19 +65,24 @@ async def weather(ctx, *, request_location : str):
 
     forecasts = []
     for i in range(3):
-        inspectionTime = time.time() + (86400*i)
+        inspectionTime = int(time.time()) + 60*60*24*i
+        conn = http.client.HTTPSConnection("api.darksky.net")
         conn.request("GET", "/forecast/{apikey}/{latitude},{longitude},{timestamp}"
                                 .format(apikey=forecast_token,
                                         latitude=lat,
                                         longitude=lon,
                                         timestamp=inspectionTime)
                                 )
+        res = conn.getresponse()
+        data = res.read()
+        weather_response = json.loads(data)
+        print(weather_response["daily"]["data"][0]["summary"])
         forecasts.append(weather_response["daily"]["data"][0]["summary"])
 
 
-    constructedString = ("The weather in **{city}** is **{temp}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n")
+    constructedString = ("The weather in **{city}** is **{temp}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n"
                          "\n"
-                         "Today's forecast: {tf}.\n"
+                         "Today's forecast: {tf}\n"
                          "Tomorrow: {f1}\n"
                          "The day after: {f2}\n")
 
@@ -86,10 +91,10 @@ async def weather(ctx, *, request_location : str):
                         city=cityName, 
                         temp=weather_f,
                         dew=dewpoint,
-                        hum=humidity)
-                         f1=forecasts[0],
-                         f2=forecasts[1],
-                         tf=forecasts[2])
+                        hum=humidity,
+                        f1=forecasts[0],
+                        f2=forecasts[1],
+                        tf=forecasts[2])
                     )
 
 @client.command(name="Urban Dictionary",
