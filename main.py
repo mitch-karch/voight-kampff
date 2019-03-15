@@ -5,6 +5,7 @@ import http.client
 import json
 import random
 import requests
+import time
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
@@ -30,21 +31,15 @@ async def on_ready():
 async def weather(ctx, *, request_location : str):
     print(ctx.message.author.name + " requested for weather:" + request_location)
 
-    #if(len(request_location.split(" ")) > 1):
-    #    request_location = request_location.replace(" ","%20")
-
-    # Try to figure out where the user wanted to get info from
+    geocode_url = 'https://us1.locationiq.com/v1/search.php'
+    # Use geocoding to get lat/lon
     conn = http.client.HTTPSConnection("")
     dataPayload = {
-            'key' : location_token,
-            'q' : request_location,
-            'format' : 'json'
+        'key' : location_token,
+        'q' : request_location,
+        'format' : 'json'
     }
-    geocode_url = 'https://us1.locationiq.com/v1/search.php'
     json_response = requests.get(geocode_url, params=dataPayload).json()
-
-    #conn.request("GET", "/key={apikey}&q={loc}".format(apikey=location_token,loc=request_location), headers=headers)
-    #json_response = json.loads(conn.getresponse().read().decode("utf-8"))
     lat = json_response[0]["lat"]
     lon = json_response[0]["lon"]
     cityName = json_response[0]["display_name"]
@@ -54,28 +49,37 @@ async def weather(ctx, *, request_location : str):
     # Get the weather conditions for the day
     conn = http.client.HTTPSConnection("api.darksky.net")
     conn.request("GET", "/forecast/{apikey}/{latitude},{longitude}"
-            .format(apikey=forecast_token,
-                    latitude=lat,
-                    longitude=lon)
-            )
+                            .format(apikey=forecast_token,
+                                    latitude=lat,
+                                    longitude=lon)
+                            )
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
 
-    print(weather_response)
     weather_f = weather_response["currently"]["temperature"]
     humidity = weather_response["currently"]["humidity"]
     dewpoint = weather_response["currently"]["dewPoint"]
-    
-    # Get some "nice text" for forecast
-#    fore0 = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
-#    fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
-#    fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
+
+    # Gather forecast summary information for the next two days.
+
+    forecasts = []
+    for i in range(3):
+        inspectionTime = time.time() + (86400*i)
+        conn.request("GET", "/forecast/{apikey}/{latitude},{longitude},{timestamp}"
+                                .format(apikey=forecast_token,
+                                        latitude=lat,
+                                        longitude=lon,
+                                        timestamp=inspectionTime)
+                                )
+        forecasts.append(weather_response["daily"]["data"][0]["summary"])
+
+
     constructedString = ("The weather in **{city}** is **{temp}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n")
-#                         "\n"
-#                         "Today's forecast: {tf}.\n"
-#                         "Tomorrow: {f1}\n"
-#                         "The day after: {f2}\n")
+                         "\n"
+                         "Today's forecast: {tf}.\n"
+                         "Tomorrow: {f1}\n"
+                         "The day after: {f2}\n")
 
     # Output all of it
     await client.say(constructedString.format(
@@ -83,9 +87,9 @@ async def weather(ctx, *, request_location : str):
                         temp=weather_f,
                         dew=dewpoint,
                         hum=humidity)
-#                         f1=fore1,
-#                         f2=fore2,
-#                         tf=fore0)
+                         f1=forecasts[0],
+                         f2=forecasts[1],
+                         tf=forecasts[2])
                     )
 
 @client.command(name="Urban Dictionary",
