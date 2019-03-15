@@ -1,4 +1,4 @@
-from lorem import discord_token, wunder_token
+from lorem import discord_token, wunder_token, location_token, forecast_token
 from discord.ext.commands import Bot
 import discord
 import http.client
@@ -33,27 +33,27 @@ async def weather(ctx, *, request_location : str):
         request_location = request_location.replace(" ","%20")
 
     # Try to figure out where the user wanted to get info from
-    conn = http.client.HTTPConnection("autocomplete.wunderground.com")
-    conn.request("GET", "/aq?query={loc}".format(loc=request_location), headers=headers)
+    conn = http.client.HTTPConnection("https://us1.locationiq.com/v1/search.php")
+    conn.request("GET", "key={apikey}&q={loc}".format(apikey=location_token,loc=request_location), headers=headers)
     json_response = json.loads(conn.getresponse().read().decode("utf-8"))
-    cityUrl = json_response["RESULTS"][0]["l"]
-    cityName = json_response["RESULTS"][0]["name"]
+    lat = json_response[0]["lat"]
+    lon = json_response[0]["lon"]
+    cityName = json_response[0]["display_name"]
 
     print("autoCompleted to:" + cityName)
 
     # Get the weather conditions for the day
-    conn = http.client.HTTPConnection("api.wunderground.com")
-    conn.request("GET", "/api/{apikey}/conditions/{location}.json"
-            .format(apikey=wunder_token,
-                    location=cityUrl),
-                    headers=headers)
+    conn = http.client.HTTPConnection("api.darksky.net")
+    conn.request("GET", "/forecast/{apikey}/{latitude},{longitude}"
+            .format(apikey=forecast_token,
+                    latitude=lat),
+                    longitude=lon)
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
-    weather_f = weather_response["current_observation"]["temp_f"]
-    feels_f = weather_response["current_observation"]["feelslike_f"]
-    humidity = weather_response["current_observation"]["relative_humidity"]
-    dewpoint = weather_response["current_observation"]["dewpoint_f"]
+    weather_f = weather_response["current"]["temperature"]
+    humidity = weather_response["current"]["humidity"]
+    dewpoint = weather_response["current"]["dewpoint"]
     
     # Get some "nice text" for forecast
     conn = http.client.HTTPConnection("api.wunderground.com")
@@ -64,25 +64,24 @@ async def weather(ctx, *, request_location : str):
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
-    fore0 = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
-    fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
-    fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
-    constructedString = ("The weather in **{city}** is **{temp}°F**, feels like **{feel_f}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n"
-                        "\n"
-                        "Today's forecast: {tf}.\n"
-                        "Tomorrow: {f1}\n"
-                        "The day after: {f2}\n")
+#    fore0 = weather_response["forecast"]["txt_forecast"]["forecastday"][0]["fcttext"]
+#    fore1 = weather_response["forecast"]["txt_forecast"]["forecastday"][1]["fcttext"]
+#    fore2 = weather_response["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
+    constructedString = ("The weather in **{city}** is **{temp}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n")
+#                         "\n"
+#                         "Today's forecast: {tf}.\n"
+#                         "Tomorrow: {f1}\n"
+#                         "The day after: {f2}\n")
 
     # Output all of it
     await client.say(constructedString.format(
                         city=cityName, 
                         temp=weather_f,
-                        feel_f=feels_f,
-                        f1=fore1,
-                        f2=fore2,
                         dew=dewpoint,
-                        hum=humidity,
-                        tf=fore0)
+                        hum=humidity)
+#                         f1=fore1,
+#                         f2=fore2,
+#                         tf=fore0)
                     )
 
 @client.command(name="Urban Dictionary",
