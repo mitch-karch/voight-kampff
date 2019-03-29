@@ -8,6 +8,7 @@ import requests
 import json
 
 from commands_library.weather_helper import weather_helper
+from commands_library.dictionary_helper import urbanDict_helper
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
@@ -43,31 +44,10 @@ async def weather(ctx, *, request_location : str):
                 pass_context=True,
                 aliases=['ud','urban'])
 async def urbanDict(ctx, *, request_definition : str):
-
     print(ctx.message.author.name + " requested for definition:" + request_definition)
-    char_lim=1000
-    if(len(request_definition.split(" ")) > 1):
-        request_definition = request_definition.replace(" ","%20")
+    constructedString = urbanDict_helper(request_definition)
+    await client.say(constructedString)
 
-    # Try to figure out where the user wanted to get info from
-    conn = http.client.HTTPSConnection("api.urbandictionary.com")
-    conn.request("GET", "/v0/define?term={stk}".format(stk=request_definition), headers=headers)
-    json_response = json.loads(conn.getresponse().read().decode("utf-8"))
-    definitions = json_response["list"]
-    print(definitions[0]["definition"]);
-
-    print("Urban Dictionary is:" + definitions[0]["word"])
-    constructedString = ("__Urban Dictionary: ***{full}***__\n"
-                        "\n"
-                        "{defn}\n"
-                        "*{example}*"
-                        )
-    await client.say(constructedString.format(
-                        defn=(definitions[0]["definition"][:char_lim] + "__[truncated]__") if len(definitions[0]["definition"]) > char_lim else definitions[0]["definition"], 
-                        full=definitions[0]["word"], 
-                        example=(definitions[0]["example"][:char_lim] + "__[truncated]__") if len(definitions[0]["example"]) > char_lim else definitions[0]["example"], 
-                        )
-                    )
 @client.command(name="d_message",
                 description="d_message",
                 brief="d_message",
