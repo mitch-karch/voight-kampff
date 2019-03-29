@@ -10,6 +10,7 @@ import json
 from commands_library.weather_helper import weather_helper
 from commands_library.dictionary_helper import urbanDict_helper
 from commands_library.reddit_helper import reddit_top3
+from commands_library.aug_helper import aug_init, aug_finder
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
@@ -18,16 +19,11 @@ headers = {
 }
 
 
-augLibrary = {"sakai":True}
-
-with open('dict.json', 'r') as f:
-    augLibrary = json.load(f)
-
 @client.event
 async def on_ready():
     print("Logged in as " + client.user.name)
     print("------")
-
+    aug_init()
 
 @client.command(name="Weather",
                 description="Tells the weather",
@@ -58,7 +54,6 @@ async def d_message(ctx):
     print(ctx.message.author.name + " requested for d")
     await client.say("d")
 
-
 @client.command(name="Reddit Top",
                 description="Gives top three posts of reddit",
                 brief="reddit",
@@ -75,19 +70,9 @@ async def reddit_top(ctx, *, request_subreddit: str ):
                 pass_context=True,
                 aliases=['au','AU','aug', 'augund','autier'])
 async def au_tier(ctx, *, word : str):
-    print(ctx.message.author.name + " requested for au of" + word)
-    #Check for existing value in dict
-    auWord=False;
-    if word in augLibrary:
-        auWord = augLibrary[word]
-    else:
-        auWord = random.choice([True,False])
-        augLibrary[word] = auWord
-    with open('dict.json', 'w') as f:
-        f.write(json.dumps(augLibrary))
-    coinF = "is" if auWord else "is not"
-    constructedString = "**{w}** __{c}__ aug und tier"
-    await client.say(constructedString.format(c=coinF,w=word))
+    print(ctx.message.author.name + " requested for au of " + word)
+    constructedString = aug_finder(word)
+    await client.say(constructedString)
 
 @client.command(name="Stocks",
                 description="Gives daily stock information",
