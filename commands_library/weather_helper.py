@@ -3,15 +3,16 @@ import requests
 import json
 import time
 
-def weather_helper(request_location : str, location_token, forecast_token):
+
+def weather_helper(request_location: str, location_token, forecast_token):
 
     geocode_url = 'https://us1.locationiq.com/v1/search.php'
     # Use geocoding to get lat/lon
     conn = http.client.HTTPSConnection("")
     dataPayload = {
-        'key' : location_token,
-        'q' : request_location,
-        'format' : 'json'
+        'key': location_token,
+        'q': request_location,
+        'format': 'json'
     }
     json_response = requests.get(geocode_url, params=dataPayload).json()
     lat = json_response[0]["lat"]
@@ -23,10 +24,10 @@ def weather_helper(request_location : str, location_token, forecast_token):
     # Get the weather conditions for the day
     conn = http.client.HTTPSConnection("api.darksky.net")
     conn.request("GET", "/forecast/{apikey}/{latitude},{longitude}"
-                            .format(apikey=forecast_token,
-                                    latitude=lat,
-                                    longitude=lon)
-                            )
+                        .format(apikey=forecast_token,
+                                latitude=lat,
+                                longitude=lon)
+                 )
     res = conn.getresponse()
     data = res.read()
     weather_response = json.loads(data)
@@ -41,20 +42,21 @@ def weather_helper(request_location : str, location_token, forecast_token):
     for i in range(3):
         inspectionTime = int(time.time()) + 60*60*24*i
         conn = http.client.HTTPSConnection("api.darksky.net")
-        conn.request("GET", "/forecast/{apikey}/{latitude},{longitude},{timestamp}"
-                                .format(apikey=forecast_token,
-                                        latitude=lat,
-                                        longitude=lon,
-                                        timestamp=inspectionTime)
-                                )
+        conn.request("GET", "/forecast/{key}/{latit},{longi},{timestamp}"
+                            .format(key=forecast_token,
+                                    latit=lat,
+                                    longi=lon,
+                                    timestamp=inspectionTime)
+                     )
         res = conn.getresponse()
         data = res.read()
         weather_response = json.loads(data)
         print(weather_response["daily"]["data"][0]["summary"])
         forecasts.append(weather_response["daily"]["data"][0]["summary"])
 
-
-    constructedString = ("The weather in **{city}** is **{temp}°F** with **{hum}** humidity. The dewpoint is **{dew}**°F\n"
+    constructedString = ("The weather in **{city}** is **{temp}°F**"
+                         "with **{hum}** humidity."
+                         "The dewpoint is **{dew}**°F\n"
                          "\n"
                          "Today's forecast: {tf}\n"
                          "Tomorrow: {f1}\n"
@@ -62,7 +64,7 @@ def weather_helper(request_location : str, location_token, forecast_token):
 
     # Output all of it
     return constructedString.format(
-                        city=cityName, 
+                        city=cityName,
                         temp=weather_f,
                         dew=dewpoint,
                         hum=humidity,
