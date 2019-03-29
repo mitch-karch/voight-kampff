@@ -4,7 +4,7 @@ Inspired by the robotic testing system from "Do Andoirds Dream of Electric Sheep
 
 To install, it's important to have a python file called `lorem.py` which has the following variables defined as string literals:
 * `discord_token` - Api key given by discord
-~~* `wunder_token` - wunderground weather token~~ **Deprecated due to API closing**
+* ~~`wunder_token` - wunderground weather token~~ **Deprecated due to API closing**
 * `location_token` - Using *locationiq* geocoding API
 * `forecast_token` - Using *forecast.io* weather API
 
