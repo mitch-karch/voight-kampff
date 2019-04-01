@@ -8,7 +8,7 @@ headers = {
 
 
 def shortStringBuild(title, url, com):
-    return "["+title+"]("+url+")|[comments](https://www.reddit.com"+com+")\n"
+    return "["+title+"]("+url+") | [comments](https://www.reddit.com"+com+")\n"
 
 
 def reddit_top3(request_subreddit):
@@ -19,10 +19,10 @@ def reddit_top3(request_subreddit):
 
     tops = json_response["data"]["children"]
     message = ""
-    for i in range(1, 4):
-        message.append(shortStringBuild(tops[i]['data']['title'],
-                                        tops[i]['data']['url'],
-                                        tops[i]['data']['permalink']))
+    for i in range(0, 3):
+        message += str(i+1) +'. '+ shortStringBuild(tops[i]['data']['title'],
+                                    tops[i]['data']['url'],
+                                    tops[i]['data']['permalink'])
 
     em = discord.Embed(title="Top posts",
                        description=message,
