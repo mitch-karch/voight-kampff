@@ -11,7 +11,6 @@ from commands_library.weather_helper import weather_helper
 from commands_library.dictionary_helper import urbanDict_helper
 from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
-#import commands_library.query_helper
 
 BOT_PREFIX = ("!",".")
 client = Bot(command_prefix=BOT_PREFIX)
