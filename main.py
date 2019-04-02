@@ -25,6 +25,14 @@ async def on_ready():
     print("------")
     aug_init()
 
+@client.event
+async def on_message(message):
+    if 'thank you baptiste' in message.content:
+        print("Oh! You're welcome")
+        await client.send_message(message.channel, "Oh! You're welcome")
+        # Do stuff here
+    await client.process_commands(message)
+    
 @client.command(name="Weather",
                 description="Tells the weather",
                 brief="Give Weather",
