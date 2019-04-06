@@ -1,4 +1,4 @@
-import discord
+from discord import Embed
 from commands_library.query_helper import query_request
 
 
@@ -19,7 +19,7 @@ def reddit_top3(req_sub):
                                                tops[i]['data']['url'],
                                                tops[i]['data']['permalink'])
 
-    em = discord.Embed(title="Top posts",
+    em = Embed(title="Top posts",
                        description=message,
                        colour=0x0000FF)
     return em

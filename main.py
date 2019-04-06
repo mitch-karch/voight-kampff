@@ -1,4 +1,4 @@
-from lorem import discord_token, wunder_token, location_token, forecast_token
+from lorem import discord_token, wunder_token, location_token, forecast_token, wolfram_token
 from discord.ext.commands import Bot
 import discord
 import http.client
@@ -11,8 +11,9 @@ from commands_library.weather_helper import weather_helper
 from commands_library.dictionary_helper import urbanDict_helper
 from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
+from commands_library.wolfram_helper import wolf_short_query
 
-BOT_PREFIX = ("!",".")
+BOT_PREFIX = (".")
 client = Bot(command_prefix=BOT_PREFIX)
 headers = {
     'cache-control': "no-cache",
@@ -81,6 +82,16 @@ async def au_tier(ctx, *, word : str):
     print(ctx.message.author.name + " requested for au of " + word)
     constructedString = aug_finder(word)
     await client.say(constructedString)
+
+@client.command(name="Wolfram Alpha",
+                description="Query of the Wolfram|Alpha Short Answer API",
+                brief="wa",
+                pass_context=True,
+                aliases=['wa','WA','wolf'])
+async def wolfram(ctx, *, query : str):
+    print(ctx.message.author.name + " requested for wolfram of " + query)
+    em = wolf_short_query(query,wolfram_token)
+    await client.send_message(ctx.message.channel, embed=em)
 
 @client.command(name="Stocks",
                 description="Gives daily stock information",
