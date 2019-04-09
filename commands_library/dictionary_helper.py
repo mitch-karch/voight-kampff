@@ -1,4 +1,5 @@
 from commands_library.query_helper import query_request
+from helper_functions.logger import general_debug, general_info
 from discord import Embed
 
 
@@ -12,18 +13,13 @@ def urbanDict_helper(request_definition, char_lim=1000):
 
     definitions = data["list"]
 
-    print("Urban Dictionary is:" + definitions[0]["word"])
-    constructedString = ("__Urban Dictionary: ***{full}***__\n"
-                         "\n"
-                         "{defn}\n"
-                         "*{example}*"
-                         )
+    general_debug("Urban Dictionary is: " + str(definitions[0]))
 
     temp_defn = definitions[0]["definition"]
+    temp_example = definitions[0]["example"]
+
     if len(temp_defn) > char_lim:
         temp_defn = definitions[0]["definition"][:char_lim] + "__[truncated]__"
-
-    temp_example = definitions[0]["example"]
 
     if len(temp_example) > char_lim:
         temp_example = definitions[0]["example"][:char_lim] + "__[truncated]__"
@@ -38,4 +34,5 @@ def urbanDict_helper(request_definition, char_lim=1000):
                  value="*" + temp_example+ "*"
                  )
 
+    general_info("Urban Dictionary created and returned embed object")
     return em
