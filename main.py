@@ -51,8 +51,8 @@ async def weather(ctx, *, request_location : str):
                 aliases=['ud','urban'])
 async def urbanDict(ctx, *, request_definition : str):
     print(ctx.message.author.name + " requested for definition:" + request_definition)
-    constructedString = urbanDict_helper(request_definition)
-    await client.say(constructedString)
+    em = urbanDict_helper(request_definition)
+    await client.send_message(ctx.message.channel, embed=em)
 
 @client.command(name="d_message",
                 description="d_message",

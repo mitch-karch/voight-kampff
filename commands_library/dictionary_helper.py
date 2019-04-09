@@ -1,8 +1,5 @@
 from commands_library.query_helper import query_request
-
-headers = {
-    'cache-control': "no-cache",
-}
+from discord import Embed
 
 
 def urbanDict_helper(request_definition, char_lim=1000):
@@ -27,10 +24,18 @@ def urbanDict_helper(request_definition, char_lim=1000):
         temp_defn = definitions[0]["definition"][:char_lim] + "__[truncated]__"
 
     temp_example = definitions[0]["example"]
+
     if len(temp_example) > char_lim:
         temp_example = definitions[0]["example"][:char_lim] + "__[truncated]__"
-    return constructedString.format(
-            defn=temp_defn,
-            full=definitions[0]["word"],
-            example=temp_example,
-            )
+
+    em = Embed(title="Urban Dictionary: " + definitions[0]["word"],
+               colour=0xef8427
+               )
+    em.add_field(name="Definition",
+                 value=temp_defn
+                 )
+    em.add_field(name="Example",
+                 value="*" + temp_example+ "*"
+                 )
+
+    return em
