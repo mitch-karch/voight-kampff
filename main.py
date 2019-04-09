@@ -41,8 +41,8 @@ async def on_message(message):
                 aliases=['w','weather'])
 async def weather(ctx, *, request_location : str):
     print(ctx.message.author.name + " requested for weather:" + request_location)
-    constructedString = weather_helper(request_location, location_token, forecast_token)
-    await client.say(constructedString)
+    em = weather_helper(request_location, location_token, forecast_token)
+    await client.send_message(ctx.message.channel, embed=em)
 
 @client.command(name="Urban Dictionary",
                 description="Gives urban definitions",

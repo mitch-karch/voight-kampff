@@ -19,7 +19,7 @@ def reddit_top3(req_sub):
                                                tops[i]['data']['url'],
                                                tops[i]['data']['permalink'])
 
-    em = Embed(title="Top posts",
+    em = Embed(title="Top posts of /r/" + req_sub,
                        description=message,
                        colour=0x0000FF)
     return em

@@ -1,6 +1,13 @@
 from commands_library.query_helper import payload_request, query_request
+from discord import Embed
+import datetime
 import time
 
+weather_baseUrl = "https://darksky.net/forecast/"
+details_baseUrl = "https://darksky.net/details/"
+
+def urlBuilder(text,link):
+    return "["+text+"]("+link+")\n"
 
 def weather_helper(request_location: str, location_token, forecast_token):
 
@@ -46,22 +53,47 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                              )
                                      )
 
-        print(wea_response["daily"]["data"][0]["summary"])
-        forecasts.append(wea_response["daily"]["data"][0]["summary"])
+        tempObj = wea_response["daily"]["data"][0]["summary"]
+        forecasts.append(tempObj)
 
-    constructedString = ("The weather in **{city}** is **{temp}°F**"
-                         "with **{hum}** humidity."
-                         "The dewpoint is **{dew}**°F\n"
-                         "\n"
-                         "Today's forecast: {tf}\n"
-                         "Tomorrow: {f1}\n"
-                         "The day after: {f2}\n")
+    mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
+    detailsUrl = details_baseUrl + str(lat) + ',' + str(lon)
 
+
+
+    titleString = urlBuilder('__Forecast in ' + cityName + '__', mainUrl)
+    mainString = ("It is currently **{temp}°F** " 
+                  "with **{hum}** humidity "
+                  "and a dewpoint of **{dew}**°F\n"
+                  ).format(temp=weather_f,
+                           dew=dewpoint,
+                           hum=humidity,
+                           )
+    
     # Output all of it
-    return constructedString.format(city=cityName,
-                                    temp=weather_f,
-                                    dew=dewpoint,
-                                    hum=humidity,
-                                    f1=forecasts[0],
-                                    f2=forecasts[1],
-                                    tf=forecasts[2])
+    em = Embed(title="Weather in " + cityName,
+                       description=mainString,
+                       colour=0x00FF00)
+
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days = 1) 
+    dayAfter = today + datetime.timedelta(days = 2) 
+    em.add_field(name="Today's forecast:", 
+                 value=urlBuilder(forecasts[0],
+                                  detailsUrl + '/' + str(today)
+                                  )
+                 )
+
+    em.add_field(name="Tomorrow's forecast:", 
+                 value=urlBuilder(forecasts[1],
+                                  detailsUrl + '/' + str(tomorrow)
+                                  )
+                 )
+
+    em.add_field(name="Day after's forecast:", 
+                 value=urlBuilder(forecasts[2],
+                                  detailsUrl + '/' + str(dayAfter)
+                                  )
+                 )
+
+    return em
