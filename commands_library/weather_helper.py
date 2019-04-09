@@ -5,21 +5,22 @@ import time
 
 weather_baseUrl = "https://darksky.net/forecast/"
 details_baseUrl = "https://darksky.net/details/"
-
-def urlBuilder(text,link):
-    return "["+text+"]("+link+")\n"
-
 emojiDict = {'clear-day': '☀️',
              'clear-night': '🌙',
-             'rain': '🌧️', 
-             'snow': '🌨️', 
+             'rain': '🌧️',
+             'snow': '🌨️',
              'sleet': '☃️',
              'wind': '🍃',
              'fog': '🌫️',
              'cloudy': '☁️',
-             'partly-cloudy-day': '⛅', 
+             'partly-cloudy-day': '⛅',
              'partly-cloudy-night': '☁️'
              }
+
+
+def urlBuilder(text, link):
+    return "["+text+"]("+link+")\n"
+
 
 def weather_helper(request_location: str, location_token, forecast_token):
 
@@ -48,7 +49,7 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                  )
 
     weather_f = wea_response["currently"]["temperature"]
-    humidity = wea_response["currently"]["humidity"]
+    humidity = '{:.1%}'.format(wea_response["currently"]["humidity"])
     dewpoint = wea_response["currently"]["dewPoint"]
 
     # Gather forecast summary information for the next two days.
@@ -68,44 +69,55 @@ def weather_helper(request_location: str, location_token, forecast_token):
         tempObj = wea_response
         forecasts.append(tempObj)
 
-    mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
+    # mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
     detailsUrl = details_baseUrl + str(lat) + ',' + str(lon)
 
-
-
-    titleString = urlBuilder('__Forecast in ' + cityName + '__', mainUrl)
-    mainString = ("It is currently **{temp}°F** " 
+    # titleString = urlBuilder('__Forecast in ' + cityName + '__', mainUrl)
+    mainString = ("It is currently **{temp}°F** "
                   "with **{hum}** humidity "
                   "and a dewpoint of **{dew}**°F\n"
                   ).format(temp=weather_f,
                            dew=dewpoint,
                            hum=humidity,
                            )
-    
     # Output all of it
     em = Embed(title="Weather in " + cityName,
-                       description=mainString,
-                       colour=0x00FF00)
+               description=mainString,
+               colour=0x00FF00)
 
     today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days = 1) 
-    dayAfter = today + datetime.timedelta(days = 2) 
-    em.add_field(name="Today's forecast:", 
-                 value=emojiDict[forecasts[0]["daily"]["data"][0]["icon"]] +\
+    tomorrow = today + datetime.timedelta(days=1)
+    dayAfter = today + datetime.timedelta(days=2)
+    em.add_field(name="Today's forecast " + "(" +
+                      str(forecasts[0]["daily"]["data"][0]["temperatureHigh"])
+                      + "/"
+                      + str(forecasts[0]["daily"]["data"][0]["temperatureLow"])
+                      + "):",
+                 value=emojiDict[forecasts[0]["daily"]["data"][0]["icon"]] +
                        urlBuilder(forecasts[0]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(today)
                                   )
                  )
 
-    em.add_field(name="Tomorrow's forecast:", 
-                 value=emojiDict[forecasts[1]["daily"]["data"][0]["icon"]] +\
+    em.add_field(name="Tomorrow's forecast " + "(" +
+                      str(forecasts[1]["daily"]["data"][0]["temperatureHigh"])
+                      + "/"
+                      + str(forecasts[1]["daily"]["data"][0]["temperatureLow"])
+                      + "):",
+
+                 value=emojiDict[forecasts[1]["daily"]["data"][0]["icon"]] +
                        urlBuilder(forecasts[1]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(tomorrow)
                                   )
                  )
 
-    em.add_field(name="Day after's forecast:", 
-                 value=emojiDict[forecasts[2]["daily"]["data"][0]["icon"]] +\
+    em.add_field(name="Day After's forecast " + "(" +
+                      str(forecasts[2]["daily"]["data"][0]["temperatureHigh"])
+                      + "/"
+                      + str(forecasts[2]["daily"]["data"][0]["temperatureLow"])
+                      + "):",
+
+                 value=emojiDict[forecasts[2]["daily"]["data"][0]["icon"]] +
                        urlBuilder(forecasts[2]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(dayAfter)
                                   )
