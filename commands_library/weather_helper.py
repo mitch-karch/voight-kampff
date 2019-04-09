@@ -9,6 +9,18 @@ details_baseUrl = "https://darksky.net/details/"
 def urlBuilder(text,link):
     return "["+text+"]("+link+")\n"
 
+emojiDict = {'clear-day': '☀️',
+             'clear-night': '🌙',
+             'rain': '🌧️', 
+             'snow': '🌨️', 
+             'sleet': '☃️',
+             'wind': '🍃',
+             'fog': '🌫️',
+             'cloudy': '☁️',
+             'partly-cloudy-day': '⛅', 
+             'partly-cloudy-night': '☁️'
+             }
+
 def weather_helper(request_location: str, location_token, forecast_token):
 
     geocode_url = 'https://us1.locationiq.com/v1/search.php'
@@ -53,7 +65,7 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                              )
                                      )
 
-        tempObj = wea_response["daily"]["data"][0]["summary"]
+        tempObj = wea_response
         forecasts.append(tempObj)
 
     mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
@@ -79,19 +91,22 @@ def weather_helper(request_location: str, location_token, forecast_token):
     tomorrow = today + datetime.timedelta(days = 1) 
     dayAfter = today + datetime.timedelta(days = 2) 
     em.add_field(name="Today's forecast:", 
-                 value=urlBuilder(forecasts[0],
+                 value=emojiDict[forecasts[0]["daily"]["data"][0]["icon"]] +\
+                       urlBuilder(forecasts[0]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(today)
                                   )
                  )
 
     em.add_field(name="Tomorrow's forecast:", 
-                 value=urlBuilder(forecasts[1],
+                 value=emojiDict[forecasts[1]["daily"]["data"][0]["icon"]] +\
+                       urlBuilder(forecasts[1]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(tomorrow)
                                   )
                  )
 
     em.add_field(name="Day after's forecast:", 
-                 value=urlBuilder(forecasts[2],
+                 value=emojiDict[forecasts[2]["daily"]["data"][0]["icon"]] +\
+                       urlBuilder(forecasts[2]["daily"]["data"][0]["summary"],
                                   detailsUrl + '/' + str(dayAfter)
                                   )
                  )
