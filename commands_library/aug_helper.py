@@ -15,6 +15,9 @@ def aug_finder(word):
         f.write(json.dumps(augLibrary))
     coinF = "is" if auWord else "is not"
     constructedString = "**{w}** __{c}__ aug und tier"
+
+    general_debug("Aug und is: " + word + ":" + str(auWord))
+    general_info("Returned Au definition")
     return constructedString.format(c=coinF, w=word)
 
 

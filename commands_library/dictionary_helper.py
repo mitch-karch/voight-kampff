@@ -1,6 +1,6 @@
+from discord import Embed
 from commands_library.query_helper import query_request
 from helper_functions.logger import general_debug, general_info
-from discord import Embed
 
 
 def urbanDict_helper(request_definition, char_lim=1000):

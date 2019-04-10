@@ -1,5 +1,7 @@
-from commands_library.query_helper import payload_request, query_request
 from discord import Embed
+from commands_library.query_helper import payload_request, query_request
+from helper_functions.logger import general_debug, general_info
+
 import datetime
 import time
 
@@ -33,11 +35,12 @@ def weather_helper(request_location: str, location_token, forecast_token):
     }
     geo_response = payload_request(geocode_url, dataPayload)
 
+    general_debug("Location is: " + geo_response)
+
     lon = geo_response[0]["lon"]
     lat = geo_response[0]["lat"]
     cityName = geo_response[0]["display_name"]
 
-    print("autoCompleted to:" + cityName)
 
     # Get the weather conditions for the day
     wea_response = query_request("api.darksky.net",
@@ -47,6 +50,8 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                          longitude=lon
                                          )
                                  )
+
+    general_debug("Weather is: " + wea_response)
 
     weather_f = wea_response["currently"]["temperature"]
     humidity = '{:.1%}'.format(wea_response["currently"]["humidity"])
@@ -65,7 +70,6 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                              tim=inspectionTime
                                              )
                                      )
-
         tempObj = wea_response
         forecasts.append(tempObj)
 
@@ -123,4 +127,5 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                   )
                  )
 
+    general_info("Weather created and returned embed object")
     return em
