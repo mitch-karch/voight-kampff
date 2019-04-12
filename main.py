@@ -5,7 +5,7 @@ from helper_functions.logger import command_log_info
 from discord.ext.commands import Bot
 
 from commands_library.weather_helper import weather_helper
-from commands_library.dictionary_helper import urbanDict_helper
+from commands_library.dictionary_helper import urbanDict_helper, urbanDict_multiple
 from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
@@ -46,10 +46,28 @@ async def weather(ctx, *, request_location: str):
                 description="Gives urban definitions",
                 brief="Give ud",
                 pass_context=True,
-                aliases=['ud', 'urban'])
-async def urbanDict(ctx, *, request_definition: str):
-    command_log_info(ctx.message.author.name, "urbanDict", request_definition)
-    em = urbanDict_helper(request_definition)
+                aliases=['ud', 'urban', 'UD'])
+async def urbanDict(ctx, *args):
+    if len(args) == 1:
+        request_definition = args[0]
+        command_log_info(ctx.message.author.name, 
+                         "single urbanDict",
+                         request_definition
+                         )
+        em = urbanDict_helper(request_definition)
+    elif len(args) == 2:
+        request_definition = args[0]
+        numOfDefs = int(args[1])
+        command_log_info(ctx.message.author.name, 
+                         "multiple urbanDict",
+                         request_definition + str(numOfDefs)
+                         )
+        em = urbanDict_multiple(request_definition,numOfDefs)
+    else:
+        em = Embed(title="Urban Dictionary recieved a bad request",
+                   colour=0xef8427
+                   )
+
     await client.send_message(ctx.message.channel, embed=em)
 
 
