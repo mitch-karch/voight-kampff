@@ -35,12 +35,12 @@ def weather_helper(request_location: str, location_token, forecast_token):
     }
     geo_response = payload_request(geocode_url, dataPayload)
 
-    general_debug("Location is: " + geo_response)
+    general_debug("Location is: " + geo_response[0]["lat"] + ","
+                                  + geo_response[0]["lon"])
 
     lon = geo_response[0]["lon"]
     lat = geo_response[0]["lat"]
     cityName = geo_response[0]["display_name"]
-
 
     # Get the weather conditions for the day
     wea_response = query_request("api.darksky.net",
@@ -51,7 +51,7 @@ def weather_helper(request_location: str, location_token, forecast_token):
                                          )
                                  )
 
-    general_debug("Weather is: " + wea_response)
+    general_debug("Weather is: " + str(wea_response))
 
     weather_f = wea_response["currently"]["temperature"]
     humidity = '{:.1%}'.format(wea_response["currently"]["humidity"])
