@@ -15,7 +15,7 @@ def wolf_short_query(submit_q, w_token):
                          raw_return=True
                          )
 
-    general_debug("Wolframalpha is: " + data)
+    general_debug("Wolframalpha is: " + str(data))
 
     constructed_string = "**{question}?**\n" \
                          "*{answer}*".format(question=submit_q,

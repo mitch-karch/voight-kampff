@@ -11,7 +11,7 @@ def reddit_top3(req_sub):
                          "/r/{s}/top/.json?limit=3".format(s=req_sub),
                          )
 
-    general_debug("Reddit is: " + data)
+    general_debug("Reddit is: " + str(data))
 
     tops = data["data"]["children"]
     message = ""
