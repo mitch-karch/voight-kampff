@@ -48,14 +48,7 @@ async def weather(ctx, *, request_location: str):
                 pass_context=True,
                 aliases=['ud', 'urban', 'UD'])
 async def urbanDict(ctx, *args):
-    if len(args) == 1:
-        request_definition = args[0]
-        command_log_info(ctx.message.author.name, 
-                         "single urbanDict",
-                         request_definition
-                         )
-        em = urbanDict_helper(request_definition)
-    elif len(args) == 2:
+    if len(args) == 2 and args[1].isdigit():
         request_definition = args[0]
         numOfDefs = int(args[1])
         command_log_info(ctx.message.author.name, 
@@ -64,9 +57,12 @@ async def urbanDict(ctx, *args):
                          )
         em = urbanDict_multiple(request_definition,numOfDefs)
     else:
-        em = Embed(title="Urban Dictionary recieved a bad request",
-                   colour=0xef8427
-                   )
+        request_definition = " ".join(args)
+        command_log_info(ctx.message.author.name, 
+                         "single urbanDict",
+                         request_definition
+                         )
+        em = urbanDict_helper(request_definition)
 
     await client.send_message(ctx.message.channel, embed=em)
 

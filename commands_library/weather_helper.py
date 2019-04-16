@@ -1,6 +1,7 @@
 from discord import Embed
 from commands_library.query_helper import payload_request, query_request
 from helper_functions.logger import general_debug, general_info
+from helper_functions.urlBuilder import urlBuilder
 
 import datetime
 import time
@@ -18,10 +19,6 @@ emojiDict = {'clear-day': '☀️',
              'partly-cloudy-day': '⛅',
              'partly-cloudy-night': '☁️'
              }
-
-
-def urlBuilder(text, link):
-    return "["+text+"]("+link+")\n"
 
 
 def weather_helper(request_location: str, location_token, forecast_token):
