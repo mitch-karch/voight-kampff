@@ -5,7 +5,8 @@ from helper_functions.urlBuilder import urlBuilder
 import re
 
 # Filter out square brackets []
-filterChars = "[\[\]]" 
+bracketRemove = r"\[(.*?)\]"
+underLinesSub = "__\\1__"
 
 def urbanDict_helper(request_definition, char_lim=1000):
     if(len(request_definition.split(" ")) > 1):
@@ -30,10 +31,21 @@ def urbanDict_helper(request_definition, char_lim=1000):
                colour=0xef8427
                )
     em.add_field(name="Definition",
-                 value=re.sub(filterChars, '', temp_def)
+                 value=re.sub(bracketRemove, 
+                              underLinesSub,
+                              temp_def,
+                              0,
+                              re.MULTILINE
+                              )
                  )
     em.add_field(name="Example",
-                 value="*" + re.sub(filterChars, '', temp_example) + "*"
+                 value="*" + re.sub(bracketRemove,
+                                    underLinesSub,
+                                    temp_example,
+                                    0,
+                                    re.MULTILINE
+                                    )
+                       + "*"
                  )
 
     general_info("Urban Dictionary created and returned embed object")
@@ -62,12 +74,23 @@ def urbanDict_multiple(request_definition, numberOfDefs=3, char_lim=1000):
         temp_def = length_limiter(definitions[defin]["definition"], char_lim)
         temp_example = length_limiter(definitions[defin]["example"], char_lim)
         em.add_field(name="Definition "+str(defin+1),
-                     value=urlBuilder(re.sub(filterChars, '', temp_def),
+                     value=urlBuilder(re.sub(bracketRemove, 
+                                             underLinesSub, 
+                                             temp_def,
+                                             0,
+                                             re.MULTILINE
+                                             ),
                                       definitions[defin]["permalink"]
                                       )
                      )
         em.add_field(name="Example "+str(defin+1),
-                     value="*" + re.sub(filterChars, '', temp_example + "*")
+                     value="*" +re.sub(bracketRemove, 
+                                             underLinesSub, 
+                                             temp_example,
+                                             0,
+                                             re.MULTILINE
+                                             )
+                           + "*"
                      )
 
         if(defin != definitionRange-1):
