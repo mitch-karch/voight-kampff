@@ -2,7 +2,10 @@ from discord import Embed
 from commands_library.query_helper import query_request
 from helper_functions.logger import general_debug, general_info
 from helper_functions.urlBuilder import urlBuilder
+import re
 
+# Filter out square brackets []
+filterChars = "[\[\]]" 
 
 def urbanDict_helper(request_definition, char_lim=1000):
     if(len(request_definition.split(" ")) > 1):
@@ -27,10 +30,10 @@ def urbanDict_helper(request_definition, char_lim=1000):
                colour=0xef8427
                )
     em.add_field(name="Definition",
-                 value=temp_def
+                 value=re.sub(filterChars, '', temp_def)
                  )
     em.add_field(name="Example",
-                 value="*" + temp_example + "*"
+                 value="*" + re.sub(filterChars, '', temp_example) + "*"
                  )
 
     general_info("Urban Dictionary created and returned embed object")
@@ -59,10 +62,12 @@ def urbanDict_multiple(request_definition, numberOfDefs=3, char_lim=1000):
         temp_def = length_limiter(definitions[defin]["definition"], char_lim)
         temp_example = length_limiter(definitions[defin]["example"], char_lim)
         em.add_field(name="Definition "+str(defin+1),
-                     value=urlBuilder(temp_def,definitions[defin]["permalink"])
+                     value=urlBuilder(re.sub(filterChars, '', temp_def),
+                                      definitions[defin]["permalink"]
+                                      )
                      )
         em.add_field(name="Example "+str(defin+1),
-                     value="*" + temp_example + "*"
+                     value="*" + re.sub(filterChars, '', temp_example + "*")
                      )
 
         if(defin != definitionRange-1):
