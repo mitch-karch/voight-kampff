@@ -13,7 +13,21 @@ def reddit_top3(req_sub):
 
     general_debug("Reddit is: " + str(data))
 
+    if "error" in data.keys():
+        message="Subreddit doesn't exist"
+        em = Embed(title="Reddit error: " + req_sub,
+                   description=message,
+                   colour=0xFF00FF)
+        return em
+
     tops = data["data"]["children"]
+    if len(tops) < 3:
+        message="Subreddit has less than 3 posts recently"
+        em = Embed(title="Reddit error: " + req_sub,
+                   description=message,
+                   colour=0xFF00FF)
+        return em
+
     message = ""
     for i in range(0, 3):
         message += str(i+1) + '. ' + \
