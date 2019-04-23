@@ -3,6 +3,7 @@ from commands_library.query_helper import query_request
 from helper_functions.logger import general_debug, general_info
 from helper_functions.errorHelpers import errorEmbedBuilder
 
+
 def shortStringBuild(title, url, com):
     return "["+title+"]("+url+") | [comments](https://www.reddit.com"+com+")\n"
 
@@ -15,6 +16,10 @@ def reddit_top3(req_sub):
     general_debug("Reddit is: " + str(data))
 
     if "error" in data.keys():
+        if "reason" in data.keys():
+            return errorEmbedBuilder("Subreddit is " + data["reason"],
+                                     "Reddit"
+                                     )
         return errorEmbedBuilder("Subreddit doesn't exist",
                                  "Reddit"
                                  )
@@ -33,8 +38,9 @@ def reddit_top3(req_sub):
                                                tops[i]['data']['permalink'])
 
     em = Embed(title="Top posts of /r/" + req_sub,
-                       description=message,
-                       colour=0x0000FF)
+               description=message,
+               colour=0x0000FF
+               )
 
     general_info("Reddit created and returned embed object")
     return em
