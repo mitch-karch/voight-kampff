@@ -1,6 +1,7 @@
 from discord import Embed
 from commands_library.query_helper import query_request
 from helper_functions.logger import general_debug, general_info
+from helper_functions.errorHelpers import errorEmbedBuilder
 
 def shortStringBuild(title, url, com):
     return "["+title+"]("+url+") | [comments](https://www.reddit.com"+com+")\n"
@@ -14,19 +15,15 @@ def reddit_top3(req_sub):
     general_debug("Reddit is: " + str(data))
 
     if "error" in data.keys():
-        message="Subreddit doesn't exist"
-        em = Embed(title="Reddit error: " + req_sub,
-                   description=message,
-                   colour=0xFF00FF)
-        return em
+        return errorEmbedBuilder("Subreddit doesn't exist",
+                                 "Reddit"
+                                 )
 
     tops = data["data"]["children"]
     if len(tops) < 3:
-        message="Subreddit has less than 3 posts recently"
-        em = Embed(title="Reddit error: " + req_sub,
-                   description=message,
-                   colour=0xFF00FF)
-        return em
+        return errorEmbedBuilder("Subreddit has less than 3 posts recently",
+                                 "Reddit"
+                                 )
 
     message = ""
     for i in range(0, 3):

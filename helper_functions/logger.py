@@ -19,3 +19,6 @@ def command_log_info(user, command_name, command_details):
                 " from " +
                 command_name
                 )
+
+def error_debug(*args):
+    logger.error(args)
