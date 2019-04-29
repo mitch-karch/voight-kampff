@@ -2,21 +2,27 @@ from discord import Embed
 from commands_library.query_helper import query_request
 from helper_functions.logger import general_debug, general_info
 from helper_functions.urlBuilder import urlBuilder
+from helper_functions.errorHelpers import errorEmbedBuilder
 import re
 
 # Filter out square brackets []
 bracketRemove = r"\[(.*?)\]"
 underLinesSub = "__\\1__"
 
-def urbanDict_helper(request_definition, char_lim=1000):
-    if(len(request_definition.split(" ")) > 1):
-        request_definition = request_definition.replace(" ", "%20")
+def urbanDict_helper(request_word, char_lim=1000):
+    if(len(request_word.split(" ")) > 1):
+        request_word = request_word.replace(" ", "%20")
 
     data = query_request("api.urbandictionary.com",
-                         "/v0/define?term={stk}".format(stk=request_definition)
+                         "/v0/define?term={stk}".format(stk=request_word)
                          )
 
     definitions = data["list"]
+
+    if len(definitions) == 0:
+        return errorEmbedBuilder("Couldn't define: *" + request_word + "*",
+                                 "Urban Dictionary"
+                                 )
 
     general_debug("Urban Dictionary is: " + str(definitions[0]))
 
@@ -52,16 +58,21 @@ def urbanDict_helper(request_definition, char_lim=1000):
     return em
 
 
-def urbanDict_multiple(request_definition, numberOfDefs=3, char_lim=1000):
+def urbanDict_multiple(request_word, numberOfDefs=3, char_lim=1000):
 
-    if(len(request_definition.split(" ")) > 1):
-        request_definition = request_definition.replace(" ", "%20")
+    if(len(request_word.split(" ")) > 1):
+        request_word = request_word.replace(" ", "%20")
 
     data = query_request("api.urbandictionary.com",
-                         "/v0/define?term={stk}".format(stk=request_definition)
+                         "/v0/define?term={stk}".format(stk=request_word)
                          )
 
     definitions = data["list"]
+
+    if len(definitions) == 0:
+        return errorEmbedBuilder("Couldn't define: *" + request_word + "*",
+                                 "Urban Dictionary"
+                                 )
 
     em = Embed(title="Urban Dictionary Top "+str(numberOfDefs)+": "
                      + definitions[0]["word"],
