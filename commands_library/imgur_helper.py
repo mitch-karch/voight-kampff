@@ -29,6 +29,11 @@ def imgur_top(req_image, imgur_id):
         em.set_image(url=top_image["images"][0]["link"])
     elif "link" in top_image.keys():
         em.set_image(url=top_image["link"])
+    elif len(top_image) == 0:
+        return errorEmbedBuilder("Imgur didn't find any images",
+                                 "Imgur"
+                                 )
+
     else:
         return errorEmbedBuilder("Imgur had issue with that request",
                                  "Imgur"
