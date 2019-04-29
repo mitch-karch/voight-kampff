@@ -16,5 +16,7 @@ def query_request(url, suburl, requestType="GET", raw_return=False):
         return json_response
 
 def payload_request(url, payload):
-    conn = http.client.HTTPSConnection("")
     return requests.get(url, params=payload).json()
+
+def headers_request(url, headers):
+    return requests.get(url, headers=headers).json()

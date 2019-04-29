@@ -1,4 +1,4 @@
-from lorem import discord_token, location_token, forecast_token, wolfram_token
+from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id
 
 from helper_functions.logger import command_log_info
 
@@ -9,6 +9,7 @@ from commands_library.dictionary_helper import urbanDict_helper, urbanDict_multi
 from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
+from commands_library.imgur_helper import imgur_top 
 
 
 BOT_PREFIX = (".")
@@ -109,5 +110,15 @@ async def wolfram(ctx, *, request_query: str):
     em = wolf_short_query(request_query, wolfram_token)
     await client.send_message(ctx.message.channel, embed=em)
 
+
+@client.command(name="Imgur Top Images",
+                description="Query top image result from Imgur api",
+                brief="im",
+                pass_context=True,
+                aliases=['im', 'IM', 'imgur', 'img'])
+async def wolfram(ctx, *, request_query: str):
+    command_log_info(ctx.message.author.name, "imgur", request_query)
+    em = imgur_top(request_query, imgur_id)
+    await client.send_message(ctx.message.channel, embed=em)
 
 client.run(discord_token)
