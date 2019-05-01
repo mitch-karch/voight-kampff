@@ -7,6 +7,9 @@ To install, it's important to have a python file called `lorem.py` which has the
 * ~~`wunder_token` - wunderground weather token~~ **Deprecated due to API closing**
 * `location_token` - Using *locationiq* geocoding API
 * `forecast_token` - Using *forecast.io* weather API
+* `imgur_id` - Using *Imgur* client ID.
+
+A template file has been created as `lorem_template.py`
 
 Currently `discord.py` only supports python 3.4-3.6 due to `async` support.
 
