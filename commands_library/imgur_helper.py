@@ -1,6 +1,6 @@
 from discord import Embed
 from commands_library.query_helper import headers_request
-from helper_functions.logger import general_debug, general_info
+from helper_functions.logger import general_info
 from helper_functions.errorHelpers import errorEmbedBuilder
 from helper_functions.urlBuilder import urlBuilder
 
@@ -9,9 +9,9 @@ def imgur_top(req_image, imgur_id):
     headers = {
         'Authorization': 'Client-ID ' + imgur_id,
     }
-    imgurUrl = 'https://api.imgur.com/3/gallery/search/viral/all?q_all={s}'.format(s=req_image)
+    imgurUrl = 'https://api.imgur.com/3/gallery/search/viral/all?q_all={s}'.format(s=req_image) # noqa: 501
     data = headers_request(imgurUrl,
-                           headers 
+                           headers
                            )
 
     if len(data["data"]) == 0:

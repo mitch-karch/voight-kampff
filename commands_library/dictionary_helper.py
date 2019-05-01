@@ -9,6 +9,7 @@ import re
 bracketRemove = r"\[(.*?)\]"
 underLinesSub = "__\\1__"
 
+
 def urbanDict_helper(request_word, char_lim=1000):
     if(len(request_word.split(" ")) > 1):
         request_word = request_word.replace(" ", "%20")
@@ -37,7 +38,7 @@ def urbanDict_helper(request_word, char_lim=1000):
                colour=0xef8427
                )
     em.add_field(name="Definition",
-                 value=re.sub(bracketRemove, 
+                 value=re.sub(bracketRemove,
                               underLinesSub,
                               temp_def,
                               0,
@@ -85,8 +86,8 @@ def urbanDict_multiple(request_word, numberOfDefs=3, char_lim=1000):
         temp_def = length_limiter(definitions[defin]["definition"], char_lim)
         temp_example = length_limiter(definitions[defin]["example"], char_lim)
         em.add_field(name="Definition "+str(defin+1),
-                     value=urlBuilder(re.sub(bracketRemove, 
-                                             underLinesSub, 
+                     value=urlBuilder(re.sub(bracketRemove,
+                                             underLinesSub,
                                              temp_def,
                                              0,
                                              re.MULTILINE
@@ -95,12 +96,12 @@ def urbanDict_multiple(request_word, numberOfDefs=3, char_lim=1000):
                                       )
                      )
         em.add_field(name="Example "+str(defin+1),
-                     value="*" +re.sub(bracketRemove, 
-                                             underLinesSub, 
-                                             temp_example,
-                                             0,
-                                             re.MULTILINE
-                                             )
+                     value="*" + re.sub(bracketRemove,
+                                        underLinesSub,
+                                        temp_example,
+                                        0,
+                                        re.MULTILINE
+                                        )
                            + "*"
                      )
 

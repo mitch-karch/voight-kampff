@@ -1,0 +1,6 @@
+discord_token = '<YOUR_TOKEN_HERE>'
+forecast_token = '<YOUR_TOKEN_HERE>'
+location_token = '<YOUR_TOKEN_HERE>'
+wolfram_token = '<YOUR_TOKEN_HERE>'
+imgur_id = '<YOUR_TOKEN_HERE>'
+imgur_secret = '<YOUR_TOKEN_HERE>'

@@ -20,5 +20,6 @@ def command_log_info(user, command_name, command_details):
                 command_name
                 )
 
+
 def error_debug(*args):
     logger.error(args)

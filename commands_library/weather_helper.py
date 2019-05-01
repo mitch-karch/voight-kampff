@@ -95,9 +95,9 @@ def weather_helper(request_location: str, location_token, forecast_token):
                       + str(forecasts[0]["daily"]["data"][0]["temperatureLow"])
                       + "):",
                  value=emojiDict[forecasts[0]["daily"]["data"][0]["icon"]] +
-                       urlBuilder(forecasts[0]["daily"]["data"][0]["summary"],
-                                  detailsUrl + '/' + str(today)
-                                  )
+                 urlBuilder(forecasts[0]["daily"]["data"][0]["summary"],
+                            detailsUrl + '/' + str(today)
+                            )
                  )
 
     em.add_field(name="Tomorrow's forecast " + "(" +
@@ -107,9 +107,9 @@ def weather_helper(request_location: str, location_token, forecast_token):
                       + "):",
 
                  value=emojiDict[forecasts[1]["daily"]["data"][0]["icon"]] +
-                       urlBuilder(forecasts[1]["daily"]["data"][0]["summary"],
-                                  detailsUrl + '/' + str(tomorrow)
-                                  )
+                 urlBuilder(forecasts[1]["daily"]["data"][0]["summary"],
+                            detailsUrl + '/' + str(tomorrow)
+                            )
                  )
 
     em.add_field(name="Day After's forecast " + "(" +
@@ -119,9 +119,9 @@ def weather_helper(request_location: str, location_token, forecast_token):
                       + "):",
 
                  value=emojiDict[forecasts[2]["daily"]["data"][0]["icon"]] +
-                       urlBuilder(forecasts[2]["daily"]["data"][0]["summary"],
-                                  detailsUrl + '/' + str(dayAfter)
-                                  )
+                 urlBuilder(forecasts[2]["daily"]["data"][0]["summary"],
+                            detailsUrl + '/' + str(dayAfter)
+                            )
                  )
 
     general_info("Weather created and returned embed object")

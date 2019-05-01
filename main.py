@@ -1,15 +1,15 @@
-from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id
+from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id # noqa: 501
 
 from helper_functions.logger import command_log_info
 
 from discord.ext.commands import Bot
 
 from commands_library.weather_helper import weather_helper
-from commands_library.dictionary_helper import urbanDict_helper, urbanDict_multiple
+from commands_library.dictionary_helper import urbanDict_helper, urbanDict_multiple # noqa: 501
 from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
-from commands_library.imgur_helper import imgur_top 
+from commands_library.imgur_helper import imgur_top
 
 
 BOT_PREFIX = (".")
@@ -52,14 +52,14 @@ async def urbanDict(ctx, *args):
     if len(args) == 2 and args[1].isdigit():
         request_definition = args[0]
         numOfDefs = int(args[1])
-        command_log_info(ctx.message.author.name, 
+        command_log_info(ctx.message.author.name,
                          "multiple urbanDict",
                          request_definition + str(numOfDefs)
                          )
-        em = urbanDict_multiple(request_definition,numOfDefs)
+        em = urbanDict_multiple(request_definition, numOfDefs)
     else:
         request_definition = " ".join(args)
-        command_log_info(ctx.message.author.name, 
+        command_log_info(ctx.message.author.name,
                          "single urbanDict",
                          request_definition
                          )
@@ -112,11 +112,11 @@ async def wolfram(ctx, *, request_query: str):
 
 
 @client.command(name="Imgur Top Images",
-                description="Query top image result from Imgur api",
+                description="Query top image result from Imgur API",
                 brief="im",
                 pass_context=True,
                 aliases=['im', 'IM', 'imgur', 'img'])
-async def wolfram(ctx, *, request_query: str):
+async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
     await client.send_message(ctx.message.channel, embed=em)
