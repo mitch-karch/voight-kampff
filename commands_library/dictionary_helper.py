@@ -10,7 +10,7 @@ bracketRemove = r"\[(.*?)\]"
 underLinesSub = "__\\1__"
 
 
-def urbanDict_helper(request_word, char_lim=1000):
+def urbanDict_helper(request_word, char_lim=900):
     if(len(request_word.split(" ")) > 1):
         request_word = request_word.replace(" ", "%20")
 
@@ -83,8 +83,12 @@ def urbanDict_multiple(request_word, numberOfDefs=3, char_lim=1000):
     definitionRange = min(numberOfDefs, len(definitions))
     for defin in range(definitionRange):
 
-        temp_def = length_limiter(definitions[defin]["definition"], char_lim)
-        temp_example = length_limiter(definitions[defin]["example"], char_lim)
+        temp_def = length_limiter(definitions[defin]["definition"],
+                                  char_lim//numberOfDefs
+                                  )
+        temp_example = length_limiter(definitions[defin]["example"],
+                                      char_lim//numberOfDefs
+                                      )
         em.add_field(name="Definition "+str(defin+1),
                      value=urlBuilder(re.sub(bracketRemove,
                                              underLinesSub,
@@ -117,5 +121,5 @@ def urbanDict_multiple(request_word, numberOfDefs=3, char_lim=1000):
 
 def length_limiter(givenString, char_lim):
     if len(givenString) > char_lim:
-        return givenString[:char_lim] + "__[truncated]__"
+        return givenString[:char_lim] + " __***|Truncated Definition|***__"
     return givenString
