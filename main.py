@@ -1,4 +1,4 @@
-from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id # noqa: 501
+from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id, webster_definition_token # noqa: 501
 
 from helper_functions.logger import command_log_info
 
@@ -10,6 +10,7 @@ from commands_library.reddit_helper import reddit_top3
 from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
 from commands_library.imgur_helper import imgur_top
+from commands_library.webster_helper import websterDict_helper
 
 
 BOT_PREFIX = (".")
@@ -119,6 +120,22 @@ async def wolfram(ctx, *, request_query: str):
 async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
+    await client.send_message(ctx.message.channel, embed=em)
+
+webster_definition_token 
+
+@client.command(name="Webster Dictionary",
+                description="Gives Webster definitions",
+                brief="Give def",
+                pass_context=True,
+                aliases=['dd', 'webster', 'DD'])
+async def websterLookup(ctx, *, request_definition: str):
+    command_log_info(ctx.message.author.name,
+                     "Webster Definition",
+                     request_definition
+                     )
+    em = websterDict_helper(request_definition, webster_definition_token)
+
     await client.send_message(ctx.message.channel, embed=em)
 
 client.run(discord_token)
