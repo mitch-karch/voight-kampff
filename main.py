@@ -28,7 +28,7 @@ async def on_ready():
 async def on_message(message):
     if 'thank you baptiste' in message.content:
         print("Oh! You're welcome")
-        await client.send_message(message.channel, "Oh! You're welcome")
+        await ctx.message.channel.send("Oh! You're welcome")
         # Do stuff here
     await client.process_commands(message)
 
@@ -41,7 +41,7 @@ async def on_message(message):
 async def weather(ctx, *, request_location: str):
     command_log_info(ctx.message.author.name, "weather", request_location)
     em = weather_helper(request_location, location_token, forecast_token)
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 
 @client.command(name="Urban Dictionary",
@@ -66,7 +66,7 @@ async def urbanDict(ctx, *args):
                          )
         em = urbanDict_helper(request_definition)
 
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 
 @client.command(name="d_message",
@@ -76,7 +76,7 @@ async def urbanDict(ctx, *args):
                 aliases=['d', 'D'])
 async def d_message(ctx):
     command_log_info(ctx.message.author.name, "d", "d")
-    await client.say("d")
+    await ctx.send("d")
 
 
 @client.command(name="Reddit Top",
@@ -87,7 +87,7 @@ async def d_message(ctx):
 async def reddit_top(ctx, *, request_subreddit: str):
     command_log_info(ctx.message.author.name, "reddit", request_subreddit)
     em = reddit_top3(request_subreddit)
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 
 @client.command(name="aug und",
@@ -98,7 +98,7 @@ async def reddit_top(ctx, *, request_subreddit: str):
 async def au_tier(ctx, *, request_word: str):
     command_log_info(ctx.message.author.name, "au_tier", request_word)
     constructedString = aug_finder(request_word)
-    await client.say(constructedString)
+    await ctx.message.channel.send(constructedString)
 
 
 @client.command(name="Wolfram Alpha",
@@ -109,7 +109,7 @@ async def au_tier(ctx, *, request_word: str):
 async def wolfram(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "wolfram", request_query)
     em = wolf_short_query(request_query, wolfram_token)
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 
 @client.command(name="Imgur Top Images",
@@ -120,7 +120,7 @@ async def wolfram(ctx, *, request_query: str):
 async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 webster_definition_token 
 
@@ -136,6 +136,6 @@ async def websterLookup(ctx, *, request_definition: str):
                      )
     em = websterDict_helper(request_definition, webster_definition_token)
 
-    await client.send_message(ctx.message.channel, embed=em)
+    await ctx.message.channel.send(embed=em)
 
 client.run(discord_token)
