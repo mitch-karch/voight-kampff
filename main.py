@@ -1,4 +1,4 @@
-from lorem import discord_token, location_token, forecast_token, wolfram_token, imgur_id, webster_definition_token # noqa: 501
+from lorem import *
 
 from helper_functions.logger import command_log_info
 
@@ -29,13 +29,12 @@ async def on_message(message):
     if 'thank you baptiste' in message.content:
         print("Oh! You're welcome")
         await message.channel.send("Oh! You're welcome")
-        # Do stuff here
     await client.process_commands(message)
 
 
 @client.command(name="Weather",
-                description="Tells the weather",
-                brief="Give Weather",
+        description="Gives the three day forecast for a request location. Weather sourced from DarkSky", # noqa: 501
+                brief="Gives weather for a location",
                 pass_context=True,
                 aliases=['w', 'weather'])
 async def weather(ctx, *, request_location: str):
@@ -45,8 +44,8 @@ async def weather(ctx, *, request_location: str):
 
 
 @client.command(name="Urban Dictionary",
-                description="Gives urban definitions",
-                brief="Give ud",
+                description="Gives urban definitions for words. Can pass an integer(N) after the definition to return the top N definitions", # noqa: 501
+                brief="Gives Urban Dictionary definitions",
                 pass_context=True,
                 aliases=['ud', 'urban', 'UD'])
 async def urbanDict(ctx, *args):
@@ -70,18 +69,18 @@ async def urbanDict(ctx, *args):
 
 
 @client.command(name="d_message",
-                description="d_message",
-                brief="d_message",
+                description="Shorthand ping message",
+                brief="Shorthand ping message",
                 pass_context=True,
                 aliases=['d', 'D'])
 async def d_message(ctx):
     command_log_info(ctx.message.author.name, "d", "d")
-    await ctx.send("d")
+    await ctx.message.channel.send("d")
 
 
 @client.command(name="Reddit Top",
-                description="Gives top three posts of reddit",
-                brief="reddit",
+                description="Gives top three posts of specific subreddit. If subreddit has less than 3 recent posts, an error will be returned.", # noqa: 501
+                brief="Gives top 3 posts of given subreddit",
                 pass_context=True,
                 aliases=['r', 'reddit'])
 async def reddit_top(ctx, *, request_subreddit: str):
@@ -91,8 +90,8 @@ async def reddit_top(ctx, *, request_subreddit: str):
 
 
 @client.command(name="aug und",
-                description="What's Aug Und Tier",
-                brief="au",
+                description="Returns if a subject is Aug Und Tier",
+                brief="Returns if a subject is Aug Und Tier",
                 pass_context=True,
                 aliases=['au', 'AU', 'aug', 'augund', 'autier'])
 async def au_tier(ctx, *, request_word: str):
@@ -103,7 +102,7 @@ async def au_tier(ctx, *, request_word: str):
 
 @client.command(name="Wolfram Alpha",
                 description="Query of the Wolfram|Alpha Short Answer API",
-                brief="wa",
+                brief="Returns a short answer of a given wolfram query",
                 pass_context=True,
                 aliases=['wa', 'WA', 'wolf'])
 async def wolfram(ctx, *, request_query: str):
@@ -114,7 +113,7 @@ async def wolfram(ctx, *, request_query: str):
 
 @client.command(name="Imgur Top Images",
                 description="Query top image result from Imgur API",
-                brief="im",
+                brief="Returns top viral image result from Imgur",
                 pass_context=True,
                 aliases=['im', 'IM', 'imgur', 'img'])
 async def imgur(ctx, *, request_query: str):
@@ -125,7 +124,7 @@ async def imgur(ctx, *, request_query: str):
 
 @client.command(name="Webster Dictionary",
                 description="Gives Webster definitions",
-                brief="Give def",
+                brief="Gives english definition",
                 pass_context=True,
                 aliases=['dd', 'webster', 'DD'])
 async def websterLookup(ctx, *, request_definition: str):
