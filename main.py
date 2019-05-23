@@ -28,7 +28,7 @@ async def on_ready():
 async def on_message(message):
     if 'thank you baptiste' in message.content:
         print("Oh! You're welcome")
-        await ctx.message.channel.send("Oh! You're welcome")
+        await message.channel.send("Oh! You're welcome")
         # Do stuff here
     await client.process_commands(message)
 
@@ -122,7 +122,6 @@ async def imgur(ctx, *, request_query: str):
     em = imgur_top(request_query, imgur_id)
     await ctx.message.channel.send(embed=em)
 
-webster_definition_token 
 
 @client.command(name="Webster Dictionary",
                 description="Gives Webster definitions",
