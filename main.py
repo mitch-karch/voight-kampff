@@ -11,6 +11,7 @@ from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
 from commands_library.imgur_helper import imgur_top
 from commands_library.webster_helper import websterDict_helper
+from commands_library.wiki_helper import wikiDict_helper
 
 
 BOT_PREFIX = (".")
@@ -119,6 +120,20 @@ async def wolfram(ctx, *, request_query: str):
 async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
+    await ctx.message.channel.send(embed=em)
+
+@client.command(name="Wikipedia",
+                description="Looks up wikipedia entries based on query",
+                brief="Looks up wikipedia",
+                pass_context=True,
+                aliases=['wi', 'wiki'])
+async def websterLookup(ctx, *, request_definition: str):
+    command_log_info(ctx.message.author.name,
+                     "Webster Definition",
+                     request_definition
+                     )
+    em = wiki_helper(request_definition)
+
     await ctx.message.channel.send(embed=em)
 
 
