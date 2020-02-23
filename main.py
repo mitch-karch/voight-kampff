@@ -11,7 +11,7 @@ from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
 from commands_library.imgur_helper import imgur_top
 from commands_library.webster_helper import websterDict_helper
-from commands_library.wiki_helper import wikiDict_helper
+from commands_library.wiki_helper import wiki_helper
 
 
 BOT_PREFIX = (".")

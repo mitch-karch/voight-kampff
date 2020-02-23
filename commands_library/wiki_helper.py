@@ -13,7 +13,9 @@ def wiki_helper(request_word):
                          "&limit=1&namespace=0&format=json"
                          .format(t=request_word)
                          )
-    if not any(isinstance(x, dict) for x in data):
+    print(data)
+    print(type(data))
+    if not any(isinstance(x, list) for x in data):
         return errorEmbedBuilder("Couldn't wikifind: *" + request_word + "* ",
                                  "Wikipedia Entry"
                                  )
@@ -23,10 +25,13 @@ def wiki_helper(request_word):
     data2 = query_request("en.wikipedia.org",
                           "/w/api.php?action=query&titles={t}"
                           "&prop=extracts&exintro&explaintext&format=json"
-                          .format(t=request_word.replace(" ", "%20"))
+                          .format(t=data[1][0].replace(" ", "%20"))
                           )
-    message = "[{0}]({1}):\n" + data2["query"]["pages"][0]["extract"]
-    em = Embed(title="Wikipedia Entry: " + data[0][1],
+
+    message = "[{0}]({1}):\n".format(data[1][0], data[3][0]) + \
+              data2["query"]["pages"][list(data2["query"]["pages"].keys())[0]]["extract"]
+
+    em = Embed(title="Wikipedia Entry: " + data[1][0],
                colour=0xffe9ab,
                description=message
                )
