@@ -26,7 +26,10 @@ def reddit_top3(req_sub):
 
     tops = data["data"]["children"]
     if len(tops) < 3:
-        return errorEmbedBuilder("Subreddit has less than 3 posts recently",
+        return errorEmbedBuilder("[Subreddit:{0}]({1})"
+                                 "has less than 3 recent posts"
+                                 .format(req_sub,
+                                         "https://www.reddit.com/r/"+req_sub),
                                  "Reddit"
                                  )
 
