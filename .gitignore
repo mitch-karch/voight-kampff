@@ -3,4 +3,5 @@ lorem.py
 bin
 lib
 include
-
+spotify.json
+.cache*

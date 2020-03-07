@@ -19,9 +19,11 @@ from commands_library.webster_helper import websterDict_helper
 from commands_library.wiki_helper import wiki_helper
 from commands_library.roll_helper import roll_helper
 from commands_library.random_helper import random_helper
+from commands_library.spotify_helper import SpotifyBot
 
 BOT_PREFIX = "."
 client = Bot(command_prefix=BOT_PREFIX)
+spotifyBot = SpotifyBot("")
 
 
 @client.event
@@ -36,6 +38,9 @@ async def on_message(message):
     if "thank you baptiste" in message.content:
         print("Oh! You're welcome")
         await message.channel.send("Oh! You're welcome")
+
+    spotifyBot.on_message(message.channel.name, message.content)
+
     await client.process_commands(message)
 
 
@@ -196,4 +201,6 @@ async def uuidGenerator(ctx, *, request_value=0):
     await ctx.message.channel.send(embed=em)
 
 
-client.run(discord_token)
+if __name__ == "__main__":
+    spotifyBot.initialize()
+    client.run(discord_token)
