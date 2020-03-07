@@ -31,12 +31,15 @@ class SpotifyWrapper:
         if not self.auth:
             raise Exception("missing initial spotify.json")
 
-        if self.auth['token']:
+        if 'token' in self.auth:
             self.token = self.auth['token']
             return self.token
 
         scope = 'playlist-modify-public user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
-        self.token = util.prompt_for_user_token(username, scope, client_id=auth.client_id, client_secret=auth.client_secret, redirect_uri=auth.redirect_uri)
+        self.token = util.prompt_for_user_token(username, scope,
+                                                client_id=self.auth['client_id'],
+                                                client_secret=self.auth['client_secret'],
+                                                redirect_uri=self.auth['redirect_uri'])
         if self.token:
             self.auth['token'] = self.token
             self.write_auth('spotify.json', self.auth)
@@ -76,13 +79,14 @@ def find_all_urls(string):
     return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)
 
 class SpotifyBot:
-    def __init__(self):
+    def __init__(self, username):
+        self.username = username
         self.log = logging.getLogger('spotify')
         self.sc = SpotifyWrapper()
         self.playlistName = 'murderoke'
 
     def initialize(self):
-        self.token = self.sc.refresh_token('')
+        self.sc.refresh_token(self.username)
         self.log.info("authenticated")
 
         self.pl = self.sc.get_or_create_playlist(self.playlistName)
@@ -111,6 +115,7 @@ class SpotifyBot:
             track_id = path[1]
             self.log.info("track %s", track_id)
             if not dry:
+                self.sc.refresh_token(self.username)
                 self.sc.add_track_to_playlist(self.pl['id'], [ track_id ])
 
         # TODO Albums and artists? Sample their tracks?
@@ -118,7 +123,7 @@ class SpotifyBot:
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    s = SpotifyBot()
+    s = SpotifyBot('')
     s.initialize()
     s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
     s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
