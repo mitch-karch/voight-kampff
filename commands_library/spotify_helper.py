@@ -36,7 +36,7 @@ class SpotifyWrapper:
             self.token = self.auth['token']
             return self.token
 
-        scope = 'playlist-modify-public user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
+        scope = 'playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
         self.token = util.prompt_for_user_token(username, scope,
                                                 client_id=self.auth['client_id'],
                                                 client_secret=self.auth['client_secret'],
