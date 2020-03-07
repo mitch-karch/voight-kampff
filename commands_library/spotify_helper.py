@@ -77,6 +77,11 @@ class SpotifyWrapper:
         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
         self.log.info(results)
 
+    def search(self, query):
+        sp = spotipy.Spotify(auth=self.token)
+        sp.trace = False
+        return sp.search(q=query, type='track')
+
 def find_all_urls(string):
     return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)
 
@@ -136,7 +141,16 @@ class SpotifyBot:
                 info = info['videoDetails']
             if 'title' in info:
                 title = info['title']
-                self.log.info("youtube %s", title)
+                self.try_add_by_search(title, dry)
+
+    def try_add_by_search(self, query, dry):
+        self.log.info("searching %s", query)
+        matches = self.sc.search(query)
+        for track in matches['tracks']['items']:
+            self.log.info(track['name'])
+            if not dry:
+                self.sc.add_track_to_playlist(self.pl['id'], [ track['id'] ])
+                return
 
     def get_youtube_id(self, url):
         # TODO Check that this is a good ID?
