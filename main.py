@@ -16,10 +16,10 @@ from commands_library.webster_helper import websterDict_helper
 from commands_library.wiki_helper import wiki_helper
 from commands_library.roll_helper import roll_helper
 from commands_library.random_helper import random_helper
+from commands_library.spotify_helper import spotify_on_message_hook
 
 BOT_PREFIX = (".")
 client = Bot(command_prefix=BOT_PREFIX)
-
 
 @client.event
 async def on_ready():
@@ -33,6 +33,9 @@ async def on_message(message):
     if 'thank you baptiste' in message.content:
         print("Oh! You're welcome")
         await message.channel.send("Oh! You're welcome")
+
+    spotify_on_message_hook(message.channel.name, message.content)
+
     await client.process_commands(message)
 
 
@@ -154,6 +157,7 @@ async def websterLookup(ctx, *, request_definition: str):
 
     await ctx.message.channel.send(embed=em)
 
+
 @client.command(name="Roll", description="Random", brief="Random", pass_context=True, aliases=['jroll', 'rand'])
 async def roll(ctx, *, dice_spec: str = "d2"):
     command_log_info(ctx.message.author.name, "roll", dice_spec)
@@ -167,7 +171,7 @@ async def roll(ctx, *, dice_spec: str = "d2"):
                 pass_context=True,
                 aliases=['roll', 'dice'])
 async def randomGenerator(ctx, *, request_value: int):
-    command_log_info(ctx.message.author.name, 
+    command_log_info(ctx.message.author.name,
                      "diceRoll",
                      str(request_value)
                      )
@@ -180,7 +184,7 @@ async def randomGenerator(ctx, *, request_value: int):
                 pass_context=True,
                 aliases=['uuid'])
 async def uuidGenerator(ctx, *, request_value=0):
-    command_log_info(ctx.message.author.name, 
+    command_log_info(ctx.message.author.name,
                      "uuid",
                      str(request_value)
                      )
