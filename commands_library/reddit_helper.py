@@ -9,9 +9,19 @@ def shortStringBuild(title, url, com):
 
 
 def reddit_top3(req_sub):
+    if(' ' in req_sub):
+        return errorEmbedBuilder("Subreddit can't have spaces",
+                                 "Reddit"
+                                 )
+
     data = query_request("www.reddit.com",
                          "/r/{s}/top/.json?limit=3".format(s=req_sub),
                          )
+
+    if data is False:
+        return errorEmbedBuilder("Something went wrong when decoding",
+                                 "Reddit"
+                                 )
 
     general_debug("Reddit is: " + str(data))
 
@@ -25,13 +35,15 @@ def reddit_top3(req_sub):
                                  )
 
     tops = data["data"]["children"]
-    if len(tops) < 3:
-        return errorEmbedBuilder("Subreddit has less than 3 posts recently",
+    if len(tops) < 1:
+        return errorEmbedBuilder("[/r/{0}]({1}) has less than 1 recent posts"
+                                 .format(req_sub,
+                                         "https://www.reddit.com/r/"+req_sub),
                                  "Reddit"
                                  )
 
     message = ""
-    for i in range(0, 3):
+    for i in range(0, len(tops)):
         message += str(i+1) + '. ' + \
                               shortStringBuild(tops[i]['data']['title'],
                                                tops[i]['data']['url'],

@@ -13,7 +13,12 @@ def query_request(url, suburl, requestType="GET", raw_return=False):
     if raw_return:
         return conn.getresponse().read().decode("utf-8")
     else:
-        json_response = json.loads(conn.getresponse().read().decode("utf-8"))
+        try:
+            json_response = json.loads(conn.getresponse()
+                                           .read().decode("utf-8"))
+        except json.decoder.JSONDecodeError:
+            return False
+
         return json_response
 
 

@@ -1,3 +1,5 @@
+#!bin/python3
+
 from lorem import *
 
 from helper_functions.logger import command_log_info
@@ -11,7 +13,9 @@ from commands_library.aug_helper import aug_init, aug_finder
 from commands_library.wolfram_helper import wolf_short_query
 from commands_library.imgur_helper import imgur_top
 from commands_library.webster_helper import websterDict_helper
-
+from commands_library.wiki_helper import wiki_helper
+from commands_library.roll_helper import roll_helper
+from commands_library.random_helper import random_helper
 
 BOT_PREFIX = (".")
 client = Bot(command_prefix=BOT_PREFIX)
@@ -121,6 +125,20 @@ async def imgur(ctx, *, request_query: str):
     em = imgur_top(request_query, imgur_id)
     await ctx.message.channel.send(embed=em)
 
+@client.command(name="Wikipedia",
+                description="Looks up wikipedia entries based on query",
+                brief="Looks up wikipedia",
+                pass_context=True,
+                aliases=['wi', 'wiki'])
+async def websterLookup(ctx, *, request_definition: str):
+    command_log_info(ctx.message.author.name,
+                     "Webster Definition",
+                     request_definition
+                     )
+    em = wiki_helper(request_definition)
+
+    await ctx.message.channel.send(embed=em)
+
 
 @client.command(name="Webster Dictionary",
                 description="Gives Webster definitions",
@@ -135,5 +153,39 @@ async def websterLookup(ctx, *, request_definition: str):
     em = websterDict_helper(request_definition, webster_definition_token)
 
     await ctx.message.channel.send(embed=em)
+
+@client.command(name="Roll", description="Random", brief="Random", pass_context=True, aliases=['jroll', 'rand'])
+async def roll(ctx, *, dice_spec: str = "d2"):
+    command_log_info(ctx.message.author.name, "roll", dice_spec)
+    outcome = roll_helper(dice_spec)
+    await ctx.message.channel.send(outcome)
+
+
+@client.command(name="Dice Roll",
+                description="Return a variety of random values",
+                brief="Return a random value",
+                pass_context=True,
+                aliases=['roll', 'dice'])
+async def randomGenerator(ctx, *, request_value: int):
+    command_log_info(ctx.message.author.name, 
+                     "diceRoll",
+                     str(request_value)
+                     )
+    em = random_helper("Roll ", request_value)
+    await ctx.message.channel.send(embed=em)
+
+@client.command(name="UUID",
+                description="Return a hex value of UUID",
+                brief="Return a random UUID",
+                pass_context=True,
+                aliases=['uuid'])
+async def uuidGenerator(ctx, *, request_value=0):
+    command_log_info(ctx.message.author.name, 
+                     "uuid",
+                     str(request_value)
+                     )
+    em = random_helper("UUID", request_value)
+    await ctx.message.channel.send(embed=em)
+
 
 client.run(discord_token)
