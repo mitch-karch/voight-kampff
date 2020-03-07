@@ -102,9 +102,12 @@ class SpotifyBot:
             self.on_url(channel, urllib.parse.urlparse(url), dry)
 
     def on_url(self, channel, url, dry):
-        if not url.netloc in ['open.spotify.com']:
-            return
+        if url.netloc in ['open.spotify.com']:
+            self.on_spotify(channel, url, dry)
+        if url.netloc in ['www.youtube.com', 'youtu.be']:
+            self.on_youtube(channel, url, dry)
 
+    def on_spotify(self, channel, url, dry):
         self.log.info("spotify %s", url.path)
 
         path = [i for i in url.path.split("/") if i]
@@ -120,6 +123,18 @@ class SpotifyBot:
 
         # TODO Albums and artists? Sample their tracks?
 
+    def on_youtube(self, channel, url, dry):
+        video_id = self.get_youtube_id(url)
+        self.log.info("youtube %s", video_id)
+
+    def get_youtube_id(self, url):
+        # TODO Check that this is a good ID?
+        query = urllib.parse.parse_qs(url.query)
+        video_id = None
+        if 'v' in query and len(query['v']) == 1:
+            return query['v'][0]
+        return url.path[1:]
+
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -127,3 +142,5 @@ if __name__ == "__main__":
     s.initialize()
     s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
     s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
+    s.on_message('test', 'https://youtu.be/ijAYN9zVnwg', dry=True)
+    s.on_message('test', 'https://www.youtube.com/watch?v=P5mtclwloEQ', dry=True)
