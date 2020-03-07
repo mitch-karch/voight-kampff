@@ -97,7 +97,8 @@ class SpotifyBot:
     def __init__(self):
         self.log = logging.getLogger("spotify")
         self.sc = SpotifyWrapper()
-        self.playlistName = "murderoke"
+        self.musicChannel = "murderoke"
+        self.playlistName = self.musicChannel
 
     def initialize(self):
         self.sc.refresh_token()
@@ -149,7 +150,8 @@ class SpotifyBot:
                 info = info['videoDetails']
             if 'title' in info:
                 title = info['title']
-                self.try_add_by_search(title, dry)
+                if channel == self.musicChannel:
+                    self.try_add_by_search(title, dry)
 
     def try_add_by_search(self, query, dry):
         self.log.info("searching %s", query)
@@ -179,4 +181,3 @@ if __name__ == "__main__":
     s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
     s.on_message('test', 'https://youtu.be/ijAYN9zVnwg', dry=True)
     s.on_message('test', 'https://www.youtube.com/watch?v=P5mtclwloEQ', dry=True)
-
