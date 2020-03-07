@@ -13,6 +13,7 @@ import spotipy.util as util
 
 class SpotifyWrapper:
     def __init__(self):
+        self.log = logging.getLogger('spotify')
         self.token = None
 
     def read_auth(self, fn):
@@ -25,19 +26,19 @@ class SpotifyWrapper:
         with open(fn, 'w') as f:
             json.dump(auth, f)
 
-    def refresh_token(self, username):
-        self.username = username
-
+    def refresh_token(self):
         self.auth = self.read_auth("spotify.json")
         if not self.auth:
             raise Exception("missing initial spotify.json")
+
+        self.username = self.auth['username']
 
         if 'token' in self.auth:
             self.token = self.auth['token']
             return self.token
 
         scope = 'playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
-        self.token = util.prompt_for_user_token(username, scope,
+        self.token = util.prompt_for_user_token(self.username, scope,
                                                 client_id=self.auth['client_id'],
                                                 client_secret=self.auth['client_secret'],
                                                 redirect_uri=self.auth['redirect_uri'])
@@ -74,20 +75,19 @@ class SpotifyWrapper:
         user = sp.current_user()
         username = user['display_name']
         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
-        print(results)
+        self.log.info(results)
 
 def find_all_urls(string):
     return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)
 
 class SpotifyBot:
-    def __init__(self, username):
-        self.username = username
+    def __init__(self):
         self.log = logging.getLogger('spotify')
         self.sc = SpotifyWrapper()
         self.playlistName = 'murderoke'
 
     def initialize(self):
-        self.sc.refresh_token(self.username)
+        self.sc.refresh_token()
         self.log.info("authenticated")
 
         self.pl = self.sc.get_or_create_playlist(self.playlistName)
@@ -119,7 +119,6 @@ class SpotifyBot:
             track_id = path[1]
             self.log.info("track %s", track_id)
             if not dry:
-                self.sc.refresh_token(self.username)
                 self.sc.add_track_to_playlist(self.pl['id'], [ track_id ])
 
         # TODO Albums and artists? Sample their tracks?
@@ -150,7 +149,7 @@ class SpotifyBot:
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    s = SpotifyBot('')
+    s = SpotifyBot()
     s.initialize()
     s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
     s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
