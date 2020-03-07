@@ -4,6 +4,8 @@ from lorem import *
 
 from helper_functions.logger import command_log_info
 
+from discord import TextChannel
+from discord.ext import tasks, commands
 from discord.ext.commands import Bot
 
 from commands_library.weather_helper import weather_helper
@@ -20,16 +22,35 @@ from commands_library.wiki_helper import wiki_helper
 from commands_library.roll_helper import roll_helper
 from commands_library.random_helper import random_helper
 from commands_library.spotify_helper import SpotifyBot
+from commands_library.reminders_helper import Clock
+from commands_library.reminders_helper import Reminders
+
+import logging
 
 BOT_PREFIX = "."
 client = Bot(command_prefix=BOT_PREFIX)
-spotifyBot = SpotifyBot()
 
+async def send_reminder(who, message):
+    logging.info("send who = %s message = %s", who, message)
+    user = client.get_user(who["id"])
+    await user.send(message)
+
+spotifyBot = SpotifyBot()
+reminders = Reminders("reminders.json", send_reminder)
+reminders.load()
+clock = Clock(reminders)
+
+
+@tasks.loop(seconds=1.0)
+async def clock_tick():
+    await clock.tick()
 
 @client.event
 async def on_ready():
     print("Logged in as " + client.user.name)
     print("------")
+    reminders.load()
+    clock_tick.start()
     aug_init()
 
 
@@ -39,7 +60,8 @@ async def on_message(message):
         print("Oh! You're welcome")
         await message.channel.send("Oh! You're welcome")
 
-    spotifyBot.on_message(message.channel.name, message.content)
+    if isinstance(message.channel, TextChannel):
+        spotifyBot.on_message(message.channel.name, message.content)
 
     await client.process_commands(message)
 
@@ -55,6 +77,50 @@ async def weather(ctx, *, request_location: str):
     command_log_info(ctx.message.author.name, "weather", request_location)
     em = weather_helper(request_location, location_token, forecast_token)
     await ctx.message.channel.send(embed=em)
+
+
+@client.command(
+    name="Reminders",
+    description="Remidners",
+    brief="Reminders",
+    pass_context=True,
+    aliases=["remind"],
+)
+async def reminder(ctx, *, reminder_spec: str):
+    command_log_info(ctx.message.author.name, "reminder", reminder_spec)
+    channel = {
+        "id": ctx.message.channel.id,
+        "name": ctx.message.channel.name,
+    }
+    author = {
+        "id": ctx.message.author.id,
+        "name": ctx.message.author.name,
+    }
+    em = clock.on_reminder(channel, author, reminder_spec)
+    if em:
+        await ctx.message.channel.send(embed=em)
+
+
+@client.command(
+    name="Timers",
+    description="Timers",
+    brief="Timers",
+    pass_context=True,
+    aliases=["timer"],
+)
+async def timer(ctx, *, timer_spec: str):
+    command_log_info(ctx.message.author.name, "timer", timer_spec)
+    channel = {
+        "id": ctx.message.channel.id,
+        "name": ctx.message.channel.name,
+    }
+    author = {
+        "id": ctx.message.author.id,
+        "name": ctx.message.author.name,
+    }
+    em = clock.on_timer(channel, author, timer_spec)
+    if em:
+        await ctx.message.channel.send(embed=em)
 
 
 @client.command(
