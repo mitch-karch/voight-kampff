@@ -1,3 +1,5 @@
+#!bin/python3
+
 from lorem import *
 
 from helper_functions.logger import command_log_info
