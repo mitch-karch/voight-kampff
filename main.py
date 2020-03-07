@@ -12,6 +12,7 @@ from commands_library.wolfram_helper import wolf_short_query
 from commands_library.imgur_helper import imgur_top
 from commands_library.webster_helper import websterDict_helper
 from commands_library.wiki_helper import wiki_helper
+from commands_library.random_helper import random_helper
 
 
 BOT_PREFIX = (".")
@@ -150,5 +151,33 @@ async def websterLookup(ctx, *, request_definition: str):
     em = websterDict_helper(request_definition, webster_definition_token)
 
     await ctx.message.channel.send(embed=em)
+
+
+@client.command(name="Dice Roll",
+                description="Return a variety of random values",
+                brief="Return a random value",
+                pass_context=True,
+                aliases=['roll', 'dice'])
+async def randomGenerator(ctx, *, request_value: int):
+    command_log_info(ctx.message.author.name, 
+                     "diceRoll",
+                     str(request_value)
+                     )
+    em = random_helper("Roll ", request_value)
+    await ctx.message.channel.send(embed=em)
+
+@client.command(name="UUID",
+                description="Return a hex value of UUID",
+                brief="Return a random UUID",
+                pass_context=True,
+                aliases=['uuid'])
+async def uuidGenerator(ctx, *, request_value=0):
+    command_log_info(ctx.message.author.name, 
+                     "uuid",
+                     str(request_value)
+                     )
+    em = random_helper("UUID", request_value)
+    await ctx.message.channel.send(embed=em)
+
 
 client.run(discord_token)
