@@ -9,8 +9,8 @@ def get_range_from_spec(spec):
     m = SimpleDiceRe.search(spec)
     if m:
         upper = int(m.group(1))
-        return [0, upper]
-    return [0, 1]
+        return [1, upper]
+    return [1, 2]
 
 def roll_helper(dice_spec):
     r = get_range_from_spec(dice_spec)
