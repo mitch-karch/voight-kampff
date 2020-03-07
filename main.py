@@ -30,10 +30,14 @@ import logging
 BOT_PREFIX = "."
 client = Bot(command_prefix=BOT_PREFIX)
 
-async def send_reminder(who, message):
-    logging.info("send who = %s message = %s", who, message)
-    user = client.get_user(who["id"])
-    await user.send(message)
+async def send_reminder(kind, channel, who, message):
+    logging.info("send kind = %s channel = %s who = %s message = %s", kind, channel, who, message)
+    if kind == 'reminder':
+        user = client.get_user(who["id"])
+        await user.send(message)
+    if kind == 'timer':
+        ch = client.get_channel(channel["id"])
+        await ch.send("Ding ding ding: " + message)
 
 spotifyBot = SpotifyBot()
 reminders = Reminders("reminders.json", send_reminder)
