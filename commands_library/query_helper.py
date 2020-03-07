@@ -3,7 +3,7 @@ import json
 import requests
 
 headers = {
-    'cache-control': "no-cache",
+    "cache-control": "no-cache",
 }
 
 
@@ -14,8 +14,7 @@ def query_request(url, suburl, requestType="GET", raw_return=False):
         return conn.getresponse().read().decode("utf-8")
     else:
         try:
-            json_response = json.loads(conn.getresponse()
-                                           .read().decode("utf-8"))
+            json_response = json.loads(conn.getresponse().read().decode("utf-8"))
         except json.decoder.JSONDecodeError:
             return False
 
