@@ -23,7 +23,7 @@ from commands_library.spotify_helper import SpotifyBot
 
 BOT_PREFIX = "."
 client = Bot(command_prefix=BOT_PREFIX)
-spotifyBot = SpotifyBot("")
+spotifyBot = SpotifyBot()
 
 
 @client.event
