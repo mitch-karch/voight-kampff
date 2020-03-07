@@ -12,11 +12,8 @@ def random_helper(commandType, value):
     elif commandType == "UUID":
         value = ""
         message = randUUID()
-        
-    em = Embed(title=commandType + str(value),
-               description=message,
-               colour=0xFFFF00
-               )
+
+    em = Embed(title=commandType + str(value), description=message, colour=0xFFFF00)
 
     return em
 

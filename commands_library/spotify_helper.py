@@ -11,6 +11,7 @@ import urllib.parse
 import spotipy
 import spotipy.util as util
 
+
 class SpotifyWrapper:
     def __init__(self):
         self.log = logging.getLogger('spotify')
@@ -23,7 +24,7 @@ class SpotifyWrapper:
         return None
 
     def write_auth(self, fn, auth):
-        with open(fn, 'w') as f:
+        with open(fn, "w") as f:
             json.dump(auth, f)
 
     def refresh_token(self):
@@ -31,20 +32,23 @@ class SpotifyWrapper:
         if not self.auth:
             raise Exception("missing initial spotify.json")
 
-        self.username = self.auth['username']
+        self.username = self.auth["username"]
 
-        if 'token' in self.auth:
-            self.token = self.auth['token']
+        if "token" in self.auth:
+            self.token = self.auth["token"]
             return self.token
 
-        scope = 'playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
-        self.token = util.prompt_for_user_token(self.username, scope,
-                                                client_id=self.auth['client_id'],
-                                                client_secret=self.auth['client_secret'],
-                                                redirect_uri=self.auth['redirect_uri'])
+        scope = "playlist-modify-public user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative"
+        self.token = util.prompt_for_user_token(
+            self.username,
+            scope,
+            client_id=self.auth["client_id"],
+            client_secret=self.auth["client_secret"],
+            redirect_uri=self.auth["redirect_uri"],
+        )
         if self.token:
-            self.auth['token'] = self.token
-            self.write_auth('spotify.json', self.auth)
+            self.auth["token"] = self.token
+            self.write_auth("spotify.json", self.auth)
             return self.token
 
         raise Exception("error getting token")
@@ -56,16 +60,16 @@ class SpotifyWrapper:
 
         page = 0
         while True:
-            playlists = sp.current_user_playlists(limit=50, offset=page*50)
-            if len(playlists['items']) == 0:
+            playlists = sp.current_user_playlists(limit=50, offset=page * 50)
+            if len(playlists["items"]) == 0:
                 break
-            for pl in playlists['items']:
-                if pl['name'] == name:
+            for pl in playlists["items"]:
+                if pl["name"] == name:
                     return pl
             page += 1
 
         user = sp.current_user()
-        username = user['display_name']
+        username = user["display_name"]
         return sp.user_playlist_create(username, name, description=name)
 
     def add_track_to_playlist(self, playlist_id, track_ids):
@@ -73,7 +77,7 @@ class SpotifyWrapper:
         sp.trace = False
 
         user = sp.current_user()
-        username = user['display_name']
+        username = user["display_name"]
         results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
         self.log.info(results)
 
@@ -83,13 +87,17 @@ class SpotifyWrapper:
         return sp.search(q=query, type='track')
 
 def find_all_urls(string):
-    return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)
+    return re.findall(
+        "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+        string,
+    )
+
 
 class SpotifyBot:
     def __init__(self):
-        self.log = logging.getLogger('spotify')
+        self.log = logging.getLogger("spotify")
         self.sc = SpotifyWrapper()
-        self.playlistName = 'murderoke'
+        self.playlistName = "murderoke"
 
     def initialize(self):
         self.sc.refresh_token()
@@ -108,9 +116,9 @@ class SpotifyBot:
             self.on_url(channel, urllib.parse.urlparse(url), dry)
 
     def on_url(self, channel, url, dry):
-        if url.netloc in ['open.spotify.com']:
+        if url.netloc in ["open.spotify.com"]:
             self.on_spotify(channel, url, dry)
-        if url.netloc in ['www.youtube.com', 'youtu.be']:
+        if url.netloc in ["www.youtube.com", "youtu.be"]:
             self.on_youtube(channel, url, dry)
 
     def on_spotify(self, channel, url, dry):
@@ -120,11 +128,11 @@ class SpotifyBot:
         if len(path) != 2:
             return
 
-        if path[0] == 'track':
+        if path[0] == "track":
             track_id = path[1]
             self.log.info("track %s", track_id)
             if not dry:
-                self.sc.add_track_to_playlist(self.pl['id'], [ track_id ])
+                self.sc.add_track_to_playlist(self.pl["id"], [track_id])
 
         # TODO Albums and artists? Sample their tracks?
 
@@ -167,5 +175,8 @@ if __name__ == "__main__":
     s.initialize()
     s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
     s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
+    s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
+    s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
     s.on_message('test', 'https://youtu.be/ijAYN9zVnwg', dry=True)
     s.on_message('test', 'https://www.youtube.com/watch?v=P5mtclwloEQ', dry=True)
+
