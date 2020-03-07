@@ -3,6 +3,5 @@ lorem.py
 bin
 lib
 include
-spotify.env
 spotify.json
 .cache*

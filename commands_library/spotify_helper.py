@@ -14,20 +14,34 @@ class SpotifyWrapper:
     def __init__(self):
         self.token = None
 
+    def read_auth(self, fn):
+        if os.path.isfile(fn):
+            with open(fn) as f:
+                return json.load(f)
+        return None
+
+    def write_auth(self, fn, auth):
+        with open(fn, 'w') as f:
+            json.dump(auth, f)
+
     def refresh_token(self, username):
         self.username = username
 
-        if os.path.isfile("spotify.json"):
-            with open('spotify.json') as f:
-                self.token = json.load(f)
-                return self.token
+        self.auth = self.read_auth("spotify.json")
+        if not self.auth:
+            raise Exception("missing initial spotify.json")
+
+        if self.auth['token']:
+            self.token = self.auth['token']
+            return self.token
+
         scope = 'playlist-modify-public user-library-read user-library-modify user-read-private user-follow-read playlist-read-collaborative'
-        token = util.prompt_for_user_token(username, scope)
-        if token:
-            with open('spotify.json', 'w') as f:
-                json.dump(token, f)
-            self.token = token
-            return token
+        self.token = util.prompt_for_user_token(username, scope, client_id=auth.client_id, client_secret=auth.client_secret, redirect_uri=auth.redirect_uri)
+        if self.token:
+            self.auth['token'] = self.token
+            self.write_auth('spotify.json', self.auth)
+            return self.token
+
         raise Exception("error getting token")
 
     # We can generalize the paging logic here.
