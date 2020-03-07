@@ -5,6 +5,7 @@ import json
 import sys
 import os.path
 import re
+import requests
 import urllib.parse
 
 import spotipy
@@ -125,7 +126,18 @@ class SpotifyBot:
 
     def on_youtube(self, channel, url, dry):
         video_id = self.get_youtube_id(url)
-        self.log.info("youtube %s", video_id)
+        if video_id:
+            self.log.info("youtube video %s", video_id)
+            info_url = 'https://www.youtube.com/get_video_info?video_id=%s' % video_id
+            raw = requests.get(info_url).text
+            info = urllib.parse.parse_qs(raw)
+            if 'player_response' in info:
+                info = json.loads(info['player_response'][0])
+            if 'videoDetails' in info:
+                info = info['videoDetails']
+            if 'title' in info:
+                title = info['title']
+                self.log.info("youtube %s", title)
 
     def get_youtube_id(self, url):
         # TODO Check that this is a good ID?
