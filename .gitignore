@@ -1,2 +1,6 @@
 lorem.py
 *.pyc
+bin
+lib
+include
+
