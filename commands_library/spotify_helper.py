@@ -133,6 +133,7 @@ class SpotifyBot:
             track_id = path[1]
             self.log.info("track %s", track_id)
             if not dry:
+                self.sc.refresh_token()
                 self.sc.add_track_to_playlist(self.pl["id"], [track_id])
 
         # TODO Albums and artists? Sample their tracks?
@@ -159,6 +160,7 @@ class SpotifyBot:
         for track in matches["tracks"]["items"]:
             self.log.info(track["name"])
             if not dry:
+                self.sc.refresh_token()
                 self.sc.add_track_to_playlist(self.pl["id"], [track["id"]])
                 return
 
