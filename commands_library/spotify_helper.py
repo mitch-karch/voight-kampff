@@ -11,7 +11,6 @@ import urllib.parse
 import spotipy
 import spotipy.util as util
 
-
 class SpotifyWrapper:
     def __init__(self):
         self.log = logging.getLogger('spotify')

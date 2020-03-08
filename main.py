@@ -24,6 +24,7 @@ from commands_library.random_helper import random_helper
 from commands_library.spotify_helper import SpotifyBot
 from commands_library.reminders_helper import Clock
 from commands_library.reminders_helper import Reminders
+from commands_library.time_helper import time_helper
 
 import logging
 
@@ -123,6 +124,20 @@ async def timer(ctx, *, timer_spec: str):
         "name": ctx.message.author.name,
     }
     em = clock.on_timer(channel, author, timer_spec)
+    if em:
+        await ctx.message.channel.send(embed=em)
+
+
+@client.command(
+    name="Time",
+    description="Time",
+    brief="Time",
+    pass_context=True,
+    aliases=["time"],
+)
+async def time(ctx, *, query: str):
+    command_log_info(ctx.message.author.name, "time", query)
+    em = time_helper(query)
     if em:
         await ctx.message.channel.send(embed=em)
 
