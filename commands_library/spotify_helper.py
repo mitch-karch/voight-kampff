@@ -11,9 +11,10 @@ import urllib.parse
 import spotipy
 import spotipy.util as util
 
+
 class SpotifyWrapper:
     def __init__(self):
-        self.log = logging.getLogger('spotify')
+        self.log = logging.getLogger("spotify")
         self.token = None
 
     def read_auth(self, fn):
@@ -82,7 +83,8 @@ class SpotifyWrapper:
     def search(self, query):
         sp = spotipy.Spotify(auth=self.token)
         sp.trace = False
-        return sp.search(q=query, type='track')
+        return sp.search(q=query, type="track")
+
 
 def find_all_urls(string):
     return re.findall(
@@ -139,43 +141,60 @@ class SpotifyBot:
         video_id = self.get_youtube_id(url)
         if video_id:
             self.log.info("youtube video %s", video_id)
-            info_url = 'https://www.youtube.com/get_video_info?video_id=%s' % video_id
+            info_url = "https://www.youtube.com/get_video_info?video_id=%s" % video_id
             raw = requests.get(info_url).text
             info = urllib.parse.parse_qs(raw)
-            if 'player_response' in info:
-                info = json.loads(info['player_response'][0])
-            if 'videoDetails' in info:
-                info = info['videoDetails']
-            if 'title' in info:
-                title = info['title']
+            if "player_response" in info:
+                info = json.loads(info["player_response"][0])
+            if "videoDetails" in info:
+                info = info["videoDetails"]
+            if "title" in info:
+                title = info["title"]
                 if channel == self.music_channel:
                     self.try_add_by_search(title, dry)
 
     def try_add_by_search(self, query, dry):
         self.log.info("searching %s", query)
         matches = self.sc.search(query)
-        for track in matches['tracks']['items']:
-            self.log.info(track['name'])
+        for track in matches["tracks"]["items"]:
+            self.log.info(track["name"])
             if not dry:
-                self.sc.add_track_to_playlist(self.pl['id'], [ track['id'] ])
+                self.sc.add_track_to_playlist(self.pl["id"], [track["id"]])
                 return
 
     def get_youtube_id(self, url):
         # TODO Check that this is a good ID?
         query = urllib.parse.parse_qs(url.query)
         video_id = None
-        if 'v' in query and len(query['v']) == 1:
-            return query['v'][0]
+        if "v" in query and len(query["v"]) == 1:
+            return query["v"][0]
         return url.path[1:]
+
 
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     s = SpotifyBot()
     s.initialize()
-    s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
-    s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
-    s.on_message('test', 'https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ', dry=True)
-    s.on_message('test', 'some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things', dry=True)
-    s.on_message('test', 'https://youtu.be/ijAYN9zVnwg', dry=True)
-    s.on_message('test', 'https://www.youtube.com/watch?v=P5mtclwloEQ', dry=True)
+    s.on_message(
+        "test",
+        "https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ",
+        dry=True,
+    )
+    s.on_message(
+        "test",
+        "some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things",
+        dry=True,
+    )
+    s.on_message(
+        "test",
+        "https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ",
+        dry=True,
+    )
+    s.on_message(
+        "test",
+        "some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things",
+        dry=True,
+    )
+    s.on_message("test", "https://youtu.be/ijAYN9zVnwg", dry=True)
+    s.on_message("test", "https://www.youtube.com/watch?v=P5mtclwloEQ", dry=True)
