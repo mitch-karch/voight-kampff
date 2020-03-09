@@ -143,22 +143,36 @@ class SpotifyBot:
         if video_id:
             self.log.info("youtube video %s", video_id)
             info_url = "https://www.youtube.com/get_video_info?video_id=%s" % video_id
+            self.log.info("youtube meta %s", video_id)
             raw = requests.get(info_url).text
             info = urllib.parse.parse_qs(raw)
             if "player_response" in info:
                 info = json.loads(info["player_response"][0])
+            else:
+                self.log.warn("no player_response")
+                return
             if "videoDetails" in info:
                 info = info["videoDetails"]
+            else:
+                self.log.warn("no video_details")
+                return
             if "title" in info:
                 title = info["title"]
+                self.log.info("title: %s", title)
                 if channel == self.music_channel:
                     self.try_add_by_search(title, dry)
+                else:
+                    self.log.info("ignoring outside of music channel")
+            else:
+                self.log.warn("no title")
 
     def try_add_by_search(self, query, dry):
         self.log.info("searching %s", query)
         matches = self.sc.search(query)
+        if len(matches) == 0:
+            self.log.info("no matches!")
         for track in matches["tracks"]["items"]:
-            self.log.info(track["name"])
+            self.log.info("matched: %s", track["name"])
             if not dry:
                 self.sc.refresh_token()
                 self.sc.add_track_to_playlist(self.pl["id"], [track["id"]])
@@ -198,5 +212,7 @@ if __name__ == "__main__":
         "some text https://open.spotify.com/track/0vj7w2ykn6IwOdNk4ggd2g?si=1UpQCzFsSKS17v5gJIXwVQ around things",
         dry=True,
     )
-    s.on_message("test", "https://youtu.be/ijAYN9zVnwg", dry=True)
-    s.on_message("test", "https://www.youtube.com/watch?v=P5mtclwloEQ", dry=True)
+    s.on_message("murderoke", "https://youtu.be/ijAYN9zVnwg", dry=True)
+    s.on_message("murderoke", "https://www.youtube.com/watch?v=P5mtclwloEQ", dry=True)
+    s.on_message("murderoke", "https://www.youtube.com/watch?v=P5mtclwloEQ", dry=True)
+    s.on_message("murderoke", "https://youtu.be/slLCnjcH5j8", dry=True)
