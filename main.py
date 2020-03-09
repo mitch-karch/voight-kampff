@@ -24,20 +24,25 @@ from commands_library.random_helper import random_helper
 from commands_library.spotify_helper import SpotifyBot
 from commands_library.reminders_helper import Clock
 from commands_library.reminders_helper import Reminders
+from commands_library.time_helper import time_helper
 
 import logging
 
 BOT_PREFIX = "."
 client = Bot(command_prefix=BOT_PREFIX)
 
+
 async def send_reminder(kind, channel, who, message):
-    logging.info("send kind = %s channel = %s who = %s message = %s", kind, channel, who, message)
-    if kind == 'reminder':
+    logging.info(
+        "send kind = %s channel = %s who = %s message = %s", kind, channel, who, message
+    )
+    if kind == "reminder":
         user = client.get_user(who["id"])
         await user.send(message)
-    if kind == 'timer':
+    if kind == "timer":
         ch = client.get_channel(channel["id"])
         await ch.send("Ding ding ding: " + message)
+
 
 spotifyBot = SpotifyBot()
 reminders = Reminders("reminders.json", send_reminder)
@@ -48,6 +53,7 @@ clock = Clock(reminders)
 @tasks.loop(seconds=1.0)
 async def clock_tick():
     await clock.tick()
+
 
 @client.event
 async def on_ready():
@@ -123,6 +129,16 @@ async def timer(ctx, *, timer_spec: str):
         "name": ctx.message.author.name,
     }
     em = clock.on_timer(channel, author, timer_spec)
+    if em:
+        await ctx.message.channel.send(embed=em)
+
+
+@client.command(
+    name="Time", description="Time", brief="Time", pass_context=True, aliases=["time"],
+)
+async def time(ctx, *, query: str):
+    command_log_info(ctx.message.author.name, "time", query)
+    em = time_helper(query)
     if em:
         await ctx.message.channel.send(embed=em)
 

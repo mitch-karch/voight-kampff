@@ -13,15 +13,14 @@ import discord
 HuhWhen = "huh, when?"
 GotYou = "i got you"
 
+
 class Reminders:
     def __init__(self, fn, send_message):
         self.log = logging.getLogger("reminders")
         self.fn = fn
         self.send_message = send_message
         self.cal = parsedatetime.Calendar()
-        self.reminders = {
-            "reminders": []
-        }
+        self.reminders = {"reminders": []}
 
     def load(self):
         if os.path.isfile(self.fn):
@@ -38,28 +37,33 @@ class Reminders:
             self.log.info("#%s author = %s spec = '%s'", channel, author, spec)
 
             parts = spec.split(" ")
-            when, status = self.cal.parse(parts[0]) #, datetime.datetime.now(pytz.timezone('UTC')))
+            when, status = self.cal.parse(
+                parts[0]
+            )  # , datetime.datetime.now(pytz.timezone('UTC')))
 
-            if False: self.log.info("status = %s when = %s", status, when)
+            if False:
+                self.log.info("status = %s when = %s", status, when)
 
             if status == 0:
                 return HuhWhen
 
-            now_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            reply_time = time.strftime('%Y-%m-%d %H:%M:%S', when)
+            now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+            reply_time = time.strftime("%Y-%m-%d %H:%M:%S", when)
             diff = time.mktime(when) - time.time()
 
             self.log.info("time = %s (diff = %s)", reply_time, diff)
 
-            self.reminders["reminders"].append({
-                "kind": kind,
-                "created": now_time,
-                "channel": channel,
-                "author": author,
-                "message": spec,
-                "alarm_pretty": reply_time,
-                "alarm": time.mktime(when),
-            })
+            self.reminders["reminders"].append(
+                {
+                    "kind": kind,
+                    "created": now_time,
+                    "channel": channel,
+                    "author": author,
+                    "message": spec,
+                    "alarm_pretty": reply_time,
+                    "alarm": time.mktime(when),
+                }
+            )
 
             self.reminders["reminders"].sort(key=lambda x: x["alarm"])
 
@@ -83,7 +87,13 @@ class Reminders:
 
     async def remind(self, reminder):
         self.log.info("remind %s", reminder)
-        await self.send_message(reminder['kind'], reminder['channel'], reminder['author'], reminder['message'])
+        await self.send_message(
+            reminder["kind"],
+            reminder["channel"],
+            reminder["author"],
+            reminder["message"],
+        )
+
 
 class Clock:
     def __init__(self, reminders):
@@ -95,20 +105,24 @@ class Clock:
 
     def on_reminder(self, channel, author, spec):
         self.r.load()
-        message = self.r.remember('reminder', channel, author, spec)
+        message = self.r.remember("reminder", channel, author, spec)
         self.r.save()
-        if message: return discord.Embed(title="Reminder", description=message, colour=0xFFFF00)
+        if message:
+            return discord.Embed(title="Reminder", description=message, colour=0xFFFF00)
         return None
 
     def on_timer(self, channel, author, spec):
         self.r.load()
-        message = self.r.remember('timer', channel, author, spec)
+        message = self.r.remember("timer", channel, author, spec)
         self.r.save()
-        if message: return discord.Embed(title="Timer", description=message, colour=0xFFFF00)
+        if message:
+            return discord.Embed(title="Timer", description=message, colour=0xFFFF00)
         return None
+
 
 async def dev_null_message(kind, channel, who, message):
     logging.info("send who = %s message = %s", who, message)
+
 
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -126,13 +140,13 @@ if __name__ == "__main__":
     }
 
     r.load()
-    assert r.remember('reminder', channel, author, "nothing") == HuhWhen
-    assert r.remember('reminder', channel, author, "something else") == HuhWhen
-    assert r.remember('reminder', channel, author, "1") == HuhWhen
-    assert r.remember('reminder', channel, author, "5s") == HuhWhen
-    assert r.remember('reminder', channel, author, "1hour hour") == GotYou
-    assert r.remember('reminder', channel, author, "5seconds five seconds") == GotYou
-    assert r.remember('reminder', channel, author, "1day 1 day") == GotYou
+    assert r.remember("reminder", channel, author, "nothing") == HuhWhen
+    assert r.remember("reminder", channel, author, "something else") == HuhWhen
+    assert r.remember("reminder", channel, author, "1") == HuhWhen
+    assert r.remember("reminder", channel, author, "5s") == HuhWhen
+    assert r.remember("reminder", channel, author, "1hour hour") == GotYou
+    assert r.remember("reminder", channel, author, "5seconds five seconds") == GotYou
+    assert r.remember("reminder", channel, author, "1day 1 day") == GotYou
     r.save()
 
     c = Clock(r)
