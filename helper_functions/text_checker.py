@@ -12,6 +12,6 @@ def response_init():
 
 def dictionary_lookup(givenPhrase):
     for k, v in responseLibrary.items():
-        if k == givenPhrase:
+        if givenPhrase.lower().find(k) != -1:
             return v
     return False
