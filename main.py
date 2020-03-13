@@ -25,6 +25,8 @@ from commands_library.spotify_helper import SpotifyBot
 from commands_library.reminders_helper import Clock
 from commands_library.reminders_helper import Reminders
 from commands_library.time_helper import time_helper
+from commands_library.typing_helper import typing_detector
+from helper_functions.text_checker import dictionary_lookup, response_init
 
 import logging
 
@@ -62,18 +64,26 @@ async def on_ready():
     reminders.load()
     clock_tick.start()
     aug_init()
+    response_init()
 
 
 @client.event
 async def on_message(message):
-    if "thank you baptiste" in message.content:
-        print("Oh! You're welcome")
-        await message.channel.send("Oh! You're welcome")
+    tempLookup = dictionary_lookup(message.content)
+    if tempLookup is not False:
+        await message.channel.send(tempLookup)
 
     if isinstance(message.channel, TextChannel):
         spotifyBot.on_message(message.channel.name, message.content)
 
     await client.process_commands(message)
+
+
+@client.event
+async def on_typing(channel, user, when):
+    # yell_message = typing_detector(channel, user, when)
+    # if yell_message is not None:
+    #     await channel.send(yell_message)
 
 
 @client.command(
