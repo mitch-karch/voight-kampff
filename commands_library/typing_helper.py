@@ -37,9 +37,10 @@ def typing_detector(channel, user, when):
     for key, value in recentMessages.items():
         if (len(value)) > userLimit:
             print("several")
-            lastShout = datetime.utcnow()
 
-            return "SEVERAL PEOPLE ARE TYPING"
+            if lastShout + timedelta(seconds=60) < datetime.utcnow():
+                lastShout = datetime.utcnow()
+                return "SEVERAL PEOPLE ARE TYPING"
 
     print(recentMessages)
 
