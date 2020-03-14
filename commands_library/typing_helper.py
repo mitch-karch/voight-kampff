@@ -25,12 +25,14 @@ def typing_detector(channel, user, when):
     elif len(recentMessages[channel.id]) == 0:
         recentMessages[channel.id].append((user, when))
     else:
+        found = False
         for index, item in enumerate(recentMessages[channel.id]):
             if item[0] == user:
                 recentMessages[channel.id][index] = (user, when)
-            else:
-                # recentMessages[channel.id].remove(item)
-                recentMessages[channel.id].append((user, when))
+                found = True
+                break
+        if not found:
+            recentMessages[channel.id].append((user, when))
 
     for key, value in recentMessages.items():
         if (len(value)) > userLimit:
