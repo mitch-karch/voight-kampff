@@ -110,7 +110,7 @@ async def reminder(ctx, *, reminder_spec: str):
     command_log_info(ctx.message.author.name, "reminder", reminder_spec)
     channel = {
         "id": ctx.message.channel.id,
-        "name": ctx.message.channel.name,
+        "name": str(ctx.message.channel),
     }
     author = {
         "id": ctx.message.author.id,
@@ -132,7 +132,7 @@ async def timer(ctx, *, timer_spec: str):
     command_log_info(ctx.message.author.name, "timer", timer_spec)
     channel = {
         "id": ctx.message.channel.id,
-        "name": ctx.message.channel.name,
+        "name": str(ctx.message.channel),
     }
     author = {
         "id": ctx.message.author.id,
