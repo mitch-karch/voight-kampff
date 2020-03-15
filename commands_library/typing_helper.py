@@ -14,9 +14,7 @@ timeAdjust = timedelta(seconds=timeLimit)
 
 def get_active_typers(now):
     return [
-        x
-        for x in recentMessages[channel.id].values()
-        if x > now - timeAdjust and x <= now
+        x for x in recentMessages[channel].values() if x > now - timeAdjust and x <= now
     ]
 
 
@@ -26,12 +24,12 @@ def typing_detector(channel, user, when, now=None):
 
     global lastShout
 
-    user = user.id
+    user = user
 
-    if channel.id not in recentMessages:
-        recentMessages[channel.id] = {}
+    if channel not in recentMessages:
+        recentMessages[channel] = {}
 
-    recentMessages[channel.id][user] = when
+    recentMessages[channel][user] = when
 
     typers = get_active_typers(now)
 
@@ -46,52 +44,23 @@ def typing_detector(channel, user, when, now=None):
             print("several, throttled")
 
 
-# Or namedtuple
-class FakeChannel:
-    def __init__(self, id):
-        self.id = id
-
-
-# Or namedtuple
-class FakeUser:
-    def __init__(self, id):
-        self.id = id
-
-
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    channel = FakeChannel("test")
-
+    channel = 1234
     clock = datetime.utcnow()
-
     lastShout = clock - timedelta(seconds=300)
 
+    assert typing_detector(channel, 1, clock + timedelta(seconds=0.1)) is None
+    assert typing_detector(channel, 2, clock + timedelta(seconds=1)) is None
+    assert typing_detector(channel, 3, clock + timedelta(seconds=1)) is None
+    assert typing_detector(channel, 4, clock + timedelta(seconds=1.5)) is None
+    assert typing_detector(channel, 5, clock + timedelta(seconds=2)) is None
     assert (
-        typing_detector(channel, FakeUser("jacob"), clock + timedelta(seconds=0.1))
-        == None
-    )
-    assert (
-        typing_detector(channel, FakeUser("carla"), clock + timedelta(seconds=1))
-        == None
-    )
-    assert (
-        typing_detector(channel, FakeUser("bob"), clock + timedelta(seconds=1)) == None
-    )
-    assert (
-        typing_detector(channel, FakeUser("bill"), clock + timedelta(seconds=1.5))
-        == None
-    )
-    assert (
-        typing_detector(channel, FakeUser("joe"), clock + timedelta(seconds=2)) == None
-    )
-    assert (
-        typing_detector(channel, FakeUser("john"), clock + timedelta(seconds=2))
+        typing_detector(channel, 6, clock + timedelta(seconds=2))
         == "SEVERAL PEOPLE ARE TYPING"
     )
-    assert (
-        typing_detector(channel, FakeUser("john"), clock + timedelta(seconds=2)) == None
-    )
+    assert typing_detector(channel, 6, clock + timedelta(seconds=2)) is None
 
     # ignore future types
     assert len(get_active_typers(clock)) == 0
