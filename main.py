@@ -81,10 +81,9 @@ async def on_message(message):
 
 @client.event
 async def on_typing(channel, user, when):
-    pass
-    # yell_message = typing_detector(channel.id, user.id, when)
-    # if yell_message is not None:
-    #     await channel.send(yell_message)
+    yell_message = typing_detector(channel.id, user.id, when)
+    if yell_message is not None:
+        await channel.send(yell_message)
 
 
 @client.command(
