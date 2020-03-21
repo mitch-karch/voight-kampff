@@ -1,17 +1,23 @@
 import json
+import random
 
 
-responseLibrary = {}
+response_library = []
 
 
 def response_init():
-    global responseLibrary
+    global response_library
     with open("responseDict.json", "r", encoding="utf8") as f:
-        responseLibrary = json.load(f)
+        response_library = json.load(f)
 
 
 def dictionary_lookup(givenPhrase):
-    for k, v in responseLibrary.items():
-        if givenPhrase.lower().find(k) != -1:
-            return v
+    print("checking", givenPhrase)
+    for entry in response_library:
+        if givenPhrase.lower().find(entry["word"]) != -1:
+            rollValue = random.uniform(0, 1)
+            print("word found", entry["probability"], rollValue)
+            if entry["probability"] > rollValue:
+                return entry["response"]
+            return False
     return False

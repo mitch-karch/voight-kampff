@@ -1,1 +1,9 @@
-{"thank you baptiste": "Oh! You're welcome", "chicken": "༼ つ ◕_◕ ༽つ chimken"}
+[
+    {"word": "chicken", "response": "chimken", "probability": 0.1},
+    {"word": "tendies", "response": ":ree:", "probability": 0.5},
+    {
+        "word": "thank you baptiste",
+        "response": "oh you're welcome!",
+        "probability": 1.0
+    }
+]
