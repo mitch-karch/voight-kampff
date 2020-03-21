@@ -12,11 +12,9 @@ def response_init():
 
 
 def dictionary_lookup(givenPhrase):
-    print("checking", givenPhrase)
     for entry in response_library:
         if givenPhrase.lower().find(entry["word"]) != -1:
             rollValue = random.uniform(0, 1)
-            print("word found", entry["probability"], rollValue)
             if entry["probability"] > rollValue:
                 return entry["response"]
             return False
