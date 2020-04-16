@@ -5,5 +5,10 @@
         "word": "thank you baptiste",
         "response": "oh you're welcome!",
         "probability": 1.0
+    },
+    {
+        "word": "the greater good",
+        "response": "https://qph.fs.quoracdn.net/main-qimg-8b4fabf24fe1401de375e6165c6e8bec",
+        "probability": 1.0
     }
 ]
