@@ -2,9 +2,11 @@ from discord import Embed
 from commands_library.query_helper import payload_request, query_request
 from helper_functions.logger import general_debug, general_info
 from helper_functions.urlBuilder import urlBuilder
+from helper_functions.errorHelpers import errorEmbedBuilder
 
 import datetime
 import time
+import json
 
 weather_baseUrl = "https://darksky.net/forecast/"
 details_baseUrl = "https://darksky.net/details/"
@@ -20,22 +22,47 @@ emojiDict = {
     "partly-cloudy-day": "⛅",
     "partly-cloudy-night": "☁️",
 }
+user_library = {}
 
 
-def weather_helper(request_location: str, location_token, forecast_token):
+def user_init():
+    global user_library
+    with open("user_weather.json", "r") as f:
+        user_library = json.load(f)
 
-    geocode_url = "https://us1.locationiq.com/v1/search.php"
-    # Use geocoding to get lat/lon
-    dataPayload = {"key": location_token, "q": request_location, "format": "json"}
-    geo_response = payload_request(geocode_url, dataPayload)
 
-    general_debug(
-        "Location is: " + geo_response[0]["lat"] + "," + geo_response[0]["lon"]
-    )
+def weather_helper_repeat_user(request_user, location_token, forecast_token):
+    try:
+        if (user_library[request_user]) is not None:
+            lon = user_library[request_user]["lon"]
+            lat = user_library[request_user]["lat"]
+            return weather_helper(
+                request_user, "congo", location_token, forecast_token, lat, lon
+            )
+    except KeyError:
+        return errorEmbedBuilder("Sorry, I have no memory of your user", "Weather")
 
-    lon = geo_response[0]["lon"]
-    lat = geo_response[0]["lat"]
-    cityName = geo_response[0]["display_name"]
+
+def weather_helper(
+    user_name, request_location: str, location_token, forecast_token, lat=None, lon=None
+):
+    global user_library
+    if lat is None and lon is None:
+        geocode_url = "https://us1.locationiq.com/v1/search.php"
+        # Use geocoding to get lat/lon
+        dataPayload = {"key": location_token, "q": request_location, "format": "json"}
+        geo_response = payload_request(geocode_url, dataPayload)
+
+        general_debug(
+            "Location is: " + geo_response[0]["lat"] + "," + geo_response[0]["lon"]
+        )
+
+        lon = geo_response[0]["lon"]
+        lat = geo_response[0]["lat"]
+        city_name = geo_response[0]["display_name"]
+        user_library[user_name] = {"lat": lat, "lon": lon, "city_name": city_name}
+        with open("user_weather.json", "w") as f:
+            f.write(json.dumps(user_name))
 
     # Get the weather conditions for the day
     wea_response = query_request(
@@ -68,14 +95,17 @@ def weather_helper(request_location: str, location_token, forecast_token):
     # mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
     detailsUrl = details_baseUrl + str(lat) + "," + str(lon)
 
-    # titleString = urlBuilder('__Forecast in ' + cityName + '__', mainUrl)
     mainString = (
         "It is currently **{temp}°F** "
         "with **{hum}** humidity "
         "and a dewpoint of **{dew}**°F\n"
     ).format(temp=weather_f, dew=dewpoint, hum=humidity,)
     # Output all of it
-    em = Embed(title="Weather in " + cityName, description=mainString, colour=0x00FF00)
+    em = Embed(
+        title="Weather in " + user_library[user_name]["city_name"],
+        description=mainString,
+        colour=0x00FF00,
+    )
 
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
