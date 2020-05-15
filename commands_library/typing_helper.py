@@ -33,8 +33,6 @@ def typing_detector(channel, user, when, now=None):
 
     typers = get_active_typers(now, channel)
 
-    print(recentMessages)
-
     if len(typers) > userLimit:
         if lastShout + timedelta(seconds=60) < datetime.utcnow():
             lastShout = now

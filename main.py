@@ -8,7 +8,11 @@ from discord import TextChannel
 from discord.ext import tasks, commands
 from discord.ext.commands import Bot
 
-from commands_library.weather_helper import weather_helper, weather_helper_repeat_user
+from commands_library.weather_helper import (
+    weather_helper,
+    weather_helper_repeat_user,
+    user_init,
+)
 from commands_library.dictionary_helper import (
     urbanDict_helper,
     urbanDict_multiple,
@@ -64,6 +68,7 @@ async def on_ready():
     reminders.load()
     clock_tick.start()
     aug_init()
+    user_init()
     response_init()
 
 
@@ -97,11 +102,11 @@ async def weather(ctx, *, request_location=None):
     command_log_info(ctx.message.author.name, "weather", str(request_location))
     if request_location is None:
         em = weather_helper_repeat_user(
-            ctx.message.author.id, location_token, forecast_token
+            str(ctx.message.author.id), location_token, forecast_token
         )
     else:
         em = weather_helper(
-            ctx.message.author.id, request_location, location_token, forecast_token
+            str(ctx.message.author.id), request_location, location_token, forecast_token
         )
     await ctx.message.channel.send(embed=em)
 

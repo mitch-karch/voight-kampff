@@ -33,7 +33,7 @@ def user_init():
 
 def weather_helper_repeat_user(request_user, location_token, forecast_token):
     try:
-        if (user_library[request_user]) is not None:
+        if str(request_user) in user_library:
             lon = user_library[request_user]["lon"]
             lat = user_library[request_user]["lat"]
             return weather_helper(
@@ -46,7 +46,6 @@ def weather_helper_repeat_user(request_user, location_token, forecast_token):
 def weather_helper(
     user_name, request_location: str, location_token, forecast_token, lat=None, lon=None
 ):
-    global user_library
     if lat is None and lon is None:
         geocode_url = "https://us1.locationiq.com/v1/search.php"
         # Use geocoding to get lat/lon
@@ -60,9 +59,9 @@ def weather_helper(
         lon = geo_response[0]["lon"]
         lat = geo_response[0]["lat"]
         city_name = geo_response[0]["display_name"]
-        user_library[user_name] = {"lat": lat, "lon": lon, "city_name": city_name}
+        user_library[str(user_name)] = {"lat": lat, "lon": lon, "city_name": city_name}
         with open("user_weather.json", "w") as f:
-            f.write(json.dumps(user_name))
+            f.write(json.dumps(user_library))
 
     # Get the weather conditions for the day
     wea_response = query_request(
