@@ -10,5 +10,12 @@
         "word": "the greater good",
         "response": "https://media1.tenor.com/images/bca4ff4f4fa7a709b746f8e32a7ed0b6/tenor.gif",
         "probability": 1.0
+    },
+    {
+        "word": "it is known",
+        "response": "https://media.tenor.com/images/6fa4d27ecd91dfbff9e06f7f91e9c0c3/tenor.gif",
+        "probability": 1.0
     }
 ]
+
+
