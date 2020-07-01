@@ -20,5 +20,10 @@
         "word": "gloomy weather",
         "response": "https://i.imgur.com/ffFHuj3.mp4",
         "probability": 1.0
+    },
+    {
+        "word": "bad bot",
+        "response": "https://i.imgur.com/VC5Thuk.mp4",
+        "probability": 1.0
     }
 ]
