@@ -115,8 +115,8 @@ async def weather(ctx, *, request_location=None):
 
 @client.command(
     name="Reminders",
-    description="Remidners",
-    brief="Reminders",
+    description="Use the reminder_spec of <length><time> <message> such as '1hour do thing'",
+    brief="Remidners",
     pass_context=True,
     aliases=["remind"],
 )
