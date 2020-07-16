@@ -8,6 +8,8 @@ from discord import TextChannel
 from discord.ext import tasks, commands
 from discord.ext.commands import Bot
 
+from discord.embeds import Embed
+
 from commands_library.weather_helper import (
     weather_helper,
     weather_helper_repeat_user,
@@ -253,7 +255,20 @@ async def wolfram(ctx, *, request_query: str):
 async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
-    await ctx.message.channel.send(embed=em)
+
+    # Note: This is not good form but is a quick way to get the intended
+    # behavior. Currently discord embeds do not support anything other than
+    # image filetypes. Imgur likes to use .mp4 which do not like to be used in
+    # embed data types. So if it's a video/mp4 type we just return the string
+    # and paste it directly to the channel where discord will embed it by
+    # itself. Technically this loses the link to the album which ruins the
+    # purpose of embed systems, but its a sacrifice and should be looked into
+    # soon.
+
+    if isinstance(em, Embed):
+        await ctx.message.channel.send(embed=em)
+    elif isinstance(em, str):
+        await ctx.message.channel.send(em)
 
 
 @client.command(

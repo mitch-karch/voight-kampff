@@ -25,7 +25,11 @@ def imgur_top(req_image, imgur_id):
         colour=0x00FF00,
     )
     if "images" in top_image.keys():
-        em.set_image(url=top_image["images"][0]["link"])
+        potential_image = top_image["images"][0]["link"]
+        if top_image["images"][0]["type"] == "video/mp4":
+            return potential_image
+
+        em.set_image(url=potential_image)
     elif "link" in top_image.keys():
         em.set_image(url=top_image["link"])
     elif len(top_image) == 0:
