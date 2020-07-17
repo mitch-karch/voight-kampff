@@ -74,13 +74,57 @@ async def on_ready():
     response_init()
 
 
+# baseunicode = 0x1F1E6
+
+stupidDict = {
+    "a": "🇦",
+    "b": "🇧",
+    "c": "🇨",
+    "d": "🇩",
+    "e": "🇪",
+    "f": "🇫",
+    "g": "🇬",
+    "h": "🇭",
+    "i": "🇮",
+    "j": "🇯",
+    "k": "🇰",
+    "l": "🇱",
+    "m": "🇲",
+    "n": "🇳",
+    "o": "🇴",
+    "p": "🇵",
+    "q": "🇶",
+    "r": "🇷",
+    "s": "🇸",
+    "t": "🇹",
+    "u": "🇺",
+    "v": "🇻",
+    "w": "🇼",
+    "x": "🇽",
+    "y": "🇾",
+    "z": "🇿",
+}
+
+
 @client.event
 async def on_message(message):
     tempLookup = dictionary_lookup(message.content)
-    if tempLookup is not False:
+    if isinstance(tempLookup, tuple):
+        for char in tempLookup[0]:
+            # Note: This doesn't work and it makes me sad. But i'm leaving it
+            # here because it deserves its place in the code foodchain
+            #
+            # offset = ord(char.lower()) - ord("a")
+            # newValue = baseunicode + offset
+            # emojiCode = "\\U000" + hex(newValue)[2:]
+            emojiCode = stupidDict[char]
+            print("Adding:" + emojiCode)
+            await message.add_reaction(emojiCode)
+
+    elif tempLookup is not False:
         await message.channel.send(tempLookup)
 
-    if isinstance(message.channel, TextChannel):
+    elif isinstance(message.channel, TextChannel):
         spotifyBot.on_message(message.channel.name, message.content)
 
     await client.process_commands(message)

@@ -1,29 +1,39 @@
 [
-    {"word": "chicken", "response": "chimken", "probability": 0.1},
-    {"word": "tendies", "response": "<:ree:678100763691712523>", "probability": 0.5},
+    {"word": "chicken", "response": "chimken", "probability": 0.1, "emoji": true},
+    {
+        "word": "tendies",
+        "response": "<:ree:678100763691712523>",
+        "probability": 0.5,
+        "emoji": false
+    },
     {
         "word": "thank you baptiste",
         "response": "oh you're welcome!",
-        "probability": 1.0
+        "probability": 1.0,
+        "emoji": false
     },
     {
         "word": "the greater good",
         "response": "https://media1.tenor.com/images/bca4ff4f4fa7a709b746f8e32a7ed0b6/tenor.gif",
-        "probability": 1.0
+        "probability": 1.0,
+        "emoji": false
     },
     {
         "word": "yoshinoya",
         "response": "https://i.imgur.com/t1oLbq1.mp4",
-        "probability": 1.0
+        "probability": 1.0,
+        "emoji": false
     },
     {
         "word": "gloomy weather",
         "response": "https://i.imgur.com/ffFHuj3.mp4",
-        "probability": 1.0
+        "probability": 1.0,
+        "emoji": false
     },
     {
         "word": "bad bot",
         "response": "https://i.imgur.com/VC5Thuk.mp4",
-        "probability": 1.0
+        "probability": 1.0,
+        "emoji": false
     }
 ]
