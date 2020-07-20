@@ -35,5 +35,20 @@
         "response": "https://i.imgur.com/VC5Thuk.mp4",
         "probability": 1.0,
         "emoji": false
+    },
+    {
+        "word": "florida",
+        "response":"https://media1.tenor.com/images/c541088577ac6b222bf51758a27ac6b8/tenor.gif",
+        "probability": 0.40,
+        "emoji": false
+    },
+    {
+        "word": "you can do it",
+        "response":"https://thumbs.gfycat.com/BriskBlushingIchneumonfly-mobile.mp4",
+        "probability": 0.80,
+        "emoji": false
     }
+
+
+
 ]
