@@ -4,7 +4,7 @@ from helper_functions.logger import general_debug, general_info
 from helper_functions.errorHelpers import errorEmbedBuilder
 
 
-def wiki_helper(request_word):
+def wiki_helper(request_word, char_lim=900):
     if len(request_word.split(" ")) > 1:
         request_word = request_word.replace(" ", "%20")
 
@@ -35,9 +35,16 @@ def wiki_helper(request_word):
         + data2["query"]["pages"][list(data2["query"]["pages"].keys())[0]]["extract"]
     )
 
+    message = length_limiter(message, char_lim)
+
     em = Embed(
         title="Wikipedia Entry: " + data[1][0], colour=0xFFE9AB, description=message
     )
 
     general_info("Wikifind created and returned embed object")
     return em
+
+def length_limiter(givenString, char_lim):
+    if len(givenString) > char_lim:
+        return givenString[:char_lim] + " __***|Truncated Definition|***__"
+    return givenString
