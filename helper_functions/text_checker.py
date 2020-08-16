@@ -16,6 +16,8 @@ def dictionary_lookup(givenPhrase):
         if givenPhrase.lower().find(entry["word"]) != -1:
             rollValue = random.uniform(0, 1)
             if entry["probability"] > rollValue:
+                if entry["emoji"]:
+                    return (entry["response"], True)
                 return entry["response"]
             return False
     return False

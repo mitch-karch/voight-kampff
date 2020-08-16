@@ -8,6 +8,8 @@ from discord import TextChannel
 from discord.ext import tasks, commands
 from discord.ext.commands import Bot
 
+from discord.embeds import Embed
+
 from commands_library.weather_helper import (
     weather_helper,
     weather_helper_repeat_user,
@@ -72,13 +74,57 @@ async def on_ready():
     response_init()
 
 
+# baseunicode = 0x1F1E6
+
+stupidDict = {
+    "a": "🇦",
+    "b": "🇧",
+    "c": "🇨",
+    "d": "🇩",
+    "e": "🇪",
+    "f": "🇫",
+    "g": "🇬",
+    "h": "🇭",
+    "i": "🇮",
+    "j": "🇯",
+    "k": "🇰",
+    "l": "🇱",
+    "m": "🇲",
+    "n": "🇳",
+    "o": "🇴",
+    "p": "🇵",
+    "q": "🇶",
+    "r": "🇷",
+    "s": "🇸",
+    "t": "🇹",
+    "u": "🇺",
+    "v": "🇻",
+    "w": "🇼",
+    "x": "🇽",
+    "y": "🇾",
+    "z": "🇿",
+}
+
+
 @client.event
 async def on_message(message):
     tempLookup = dictionary_lookup(message.content)
-    if tempLookup is not False:
+    if isinstance(tempLookup, tuple):
+        for char in tempLookup[0]:
+            # Note: This doesn't work and it makes me sad. But i'm leaving it
+            # here because it deserves its place in the code foodchain
+            #
+            # offset = ord(char.lower()) - ord("a")
+            # newValue = baseunicode + offset
+            # emojiCode = "\\U000" + hex(newValue)[2:]
+            emojiCode = stupidDict[char]
+            print("Adding:" + emojiCode)
+            await message.add_reaction(emojiCode)
+
+    elif tempLookup is not False:
         await message.channel.send(tempLookup)
 
-    if isinstance(message.channel, TextChannel):
+    elif isinstance(message.channel, TextChannel):
         spotifyBot.on_message(message.channel.name, message.content)
 
     await client.process_commands(message)
@@ -113,8 +159,8 @@ async def weather(ctx, *, request_location=None):
 
 @client.command(
     name="Reminders",
-    description="Remidners",
-    brief="Reminders",
+    description="Use the reminder_spec of <length><time> <message> such as '1hour do thing'",
+    brief="Remidners",
     pass_context=True,
     aliases=["remind"],
 )
@@ -253,7 +299,20 @@ async def wolfram(ctx, *, request_query: str):
 async def imgur(ctx, *, request_query: str):
     command_log_info(ctx.message.author.name, "imgur", request_query)
     em = imgur_top(request_query, imgur_id)
-    await ctx.message.channel.send(embed=em)
+
+    # Note: This is not good form but is a quick way to get the intended
+    # behavior. Currently discord embeds do not support anything other than
+    # image filetypes. Imgur likes to use .mp4 which do not like to be used in
+    # embed data types. So if it's a video/mp4 type we just return the string
+    # and paste it directly to the channel where discord will embed it by
+    # itself. Technically this loses the link to the album which ruins the
+    # purpose of embed systems, but its a sacrifice and should be looked into
+    # soon.
+
+    if isinstance(em, Embed):
+        await ctx.message.channel.send(embed=em)
+    elif isinstance(em, str):
+        await ctx.message.channel.send(em)
 
 
 @client.command(
