@@ -6,3 +6,4 @@ include
 spotify.json
 .cache*
 reminders*.json
+*.log
