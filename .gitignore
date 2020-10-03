@@ -7,3 +7,4 @@ spotify.json
 .cache*
 reminders*.json
 *.log
+.vscode/
