@@ -30,6 +30,7 @@ from commands_library.random_helper import random_helper
 from commands_library.spotify_helper import SpotifyBot
 from commands_library.reminders_helper import Clock
 from commands_library.reminders_helper import Reminders
+from commands_library.thes_helper import thes_helper
 from commands_library.time_helper import time_helper
 from commands_library.typing_helper import typing_detector
 from helper_functions.text_checker import dictionary_lookup, response_init
@@ -342,6 +343,18 @@ async def websterLookup(ctx, *, request_definition: str):
 
     await ctx.message.channel.send(embed=em)
 
+@client.command(
+    name="Thesaurus",
+    description="Gives synonyms",
+    brief="Gives synonyms from webster-thesaurus API",
+    pass_context=True,
+    aliases=["th", "thesaurus", "thes"],
+)
+async def websterLookup(ctx, *, request_definition: str):
+    command_log_info(ctx.message.author.name, "Thesaurus Lookup", request_definition)
+    em = thes_helper(request_definition, webster_thesaurus_token)
+
+    await ctx.message.channel.send(embed=em)
 
 @client.command(
     name="Dice Roll",
