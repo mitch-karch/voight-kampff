@@ -149,11 +149,11 @@ async def weather(ctx, *, request_location=None):
     command_log_info(ctx.message.author.name, "weather", str(request_location))
     if request_location is None:
         em = weather_helper_repeat_user(
-            str(ctx.message.author.id), location_token, forecast_token
+            str(ctx.message.author.id), location_token, open_weather_token
         )
     else:
         em = weather_helper(
-            str(ctx.message.author.id), request_location, location_token, forecast_token
+            str(ctx.message.author.id), request_location, location_token, open_weather_token
         )
     await ctx.message.channel.send(embed=em)
 
@@ -203,7 +203,11 @@ async def timer(ctx, *, timer_spec: str):
 
 
 @client.command(
-    name="Time", description="Time", brief="Time", pass_context=True, aliases=["time"],
+    name="Time",
+    description="Time",
+    brief="Time",
+    pass_context=True,
+    aliases=["time"],
 )
 async def time(ctx, *, query: str):
     command_log_info(ctx.message.author.name, "time", query)
@@ -343,6 +347,7 @@ async def websterLookup(ctx, *, request_definition: str):
 
     await ctx.message.channel.send(embed=em)
 
+
 @client.command(
     name="Thesaurus",
     description="Gives synonyms",
@@ -355,6 +360,7 @@ async def websterLookup(ctx, *, request_definition: str):
     em = thes_helper(request_definition, webster_thesaurus_token)
 
     await ctx.message.channel.send(embed=em)
+
 
 @client.command(
     name="Dice Roll",

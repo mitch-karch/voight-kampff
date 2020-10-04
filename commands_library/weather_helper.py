@@ -8,19 +8,27 @@ import datetime
 import time
 import json
 
-weather_baseUrl = "https://darksky.net/forecast/"
-details_baseUrl = "https://darksky.net/details/"
+geocode_url = "https://us1.locationiq.com/v1/search.php"
+
 emojiDict = {
-    "clear-day": "☀️",
-    "clear-night": "🌙",
-    "rain": "🌧️",
-    "snow": "🌨️",
-    "sleet": "☃️",
-    "wind": "🍃",
-    "fog": "🌫️",
-    "cloudy": "☁️",
-    "partly-cloudy-day": "⛅",
-    "partly-cloudy-night": "☁️",
+    "01d": "☀️",
+    "01n": "🌙",
+    "02d": "⛅",
+    "02n": "☁️",
+    "03d": "☁️",
+    "03n": "☁️",
+    "04d": "☁️",
+    "04n": "☁️",
+    "09d": "🌧️",
+    "09n": "🌧️",
+    "10d": "🌧️",
+    "10n": "🌧️",
+    "11d": "🌩️",
+    "11n": "🌩️",
+    "13d": "🌨️",
+    "13n": "🌨️",
+    "50d": "🌫️",
+    "50n": "🌫️",
 }
 user_library = {}
 
@@ -47,7 +55,6 @@ def weather_helper(
     user_name, request_location: str, location_token, forecast_token, lat=None, lon=None
 ):
     if lat is None and lon is None:
-        geocode_url = "https://us1.locationiq.com/v1/search.php"
         # Use geocoding to get lat/lon
         dataPayload = {"key": location_token, "q": request_location, "format": "json"}
         geo_response = payload_request(geocode_url, dataPayload)
@@ -65,40 +72,27 @@ def weather_helper(
 
     # Get the weather conditions for the day
     wea_response = query_request(
-        "api.darksky.net",
-        "/forecast/{apikey}/{latitude},{longitude}".format(
+        "api.openweathermap.org",
+        "/data/2.5/onecall?lat={latitude}&lon={longitude}&appid={apikey}&units=imperial".format(
             apikey=forecast_token, latitude=lat, longitude=lon
         ),
     )
 
-    general_debug("Weather is: " + str(wea_response))
+    general_info("Weather is: " + str(wea_response))
 
-    weather_f = wea_response["currently"]["temperature"]
-    humidity = "{:.1%}".format(wea_response["currently"]["humidity"])
-    dewpoint = wea_response["currently"]["dewPoint"]
+    weather_f = wea_response["current"]["temp"]
+    humidity = str(wea_response["current"]["humidity"]) + "%"
+    dewpoint = wea_response["current"]["dew_point"]
+    summary = wea_response["current"]["weather"][0]["description"].title()
 
     # Gather forecast summary information for the next two days.
-
-    forecasts = []
-    for i in range(3):
-        inspectionTime = int(time.time()) + 60 * 60 * 24 * i
-        wea_response = query_request(
-            "api.darksky.net",
-            "/forecast/{key}/{latit},{longi},{tim}".format(
-                key=forecast_token, latit=lat, longi=lon, tim=inspectionTime
-            ),
-        )
-        tempObj = wea_response
-        forecasts.append(tempObj)
-
-    # mainUrl = weather_baseUrl + str(lat) + ',' + str(lon)
-    detailsUrl = details_baseUrl + str(lat) + "," + str(lon)
 
     mainString = (
         "It is currently **{temp}°F** "
         "with **{hum}** humidity "
         "and a dewpoint of **{dew}**°F\n"
-    ).format(temp=weather_f, dew=dewpoint, hum=humidity,)
+        "A description of the weather: {sum}"
+    ).format(temp=weather_f, dew=dewpoint, hum=humidity, sum=summary)
     # Output all of it
     em = Embed(
         title="Weather in " + user_library[user_name]["city_name"],
@@ -106,49 +100,20 @@ def weather_helper(
         colour=0x00FF00,
     )
 
-    today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days=1)
-    dayAfter = today + datetime.timedelta(days=2)
-    em.add_field(
-        name="Today's forecast "
-        + "("
-        + str(forecasts[0]["daily"]["data"][0]["temperatureHigh"])
-        + "/"
-        + str(forecasts[0]["daily"]["data"][0]["temperatureLow"])
-        + "):",
-        value=emojiDict[forecasts[0]["daily"]["data"][0]["icon"]]
-        + urlBuilder(
-            forecasts[0]["daily"]["data"][0]["summary"], detailsUrl + "/" + str(today)
-        ),
-    )
-
-    em.add_field(
-        name="Tomorrow's forecast "
-        + "("
-        + str(forecasts[1]["daily"]["data"][0]["temperatureHigh"])
-        + "/"
-        + str(forecasts[1]["daily"]["data"][0]["temperatureLow"])
-        + "):",
-        value=emojiDict[forecasts[1]["daily"]["data"][0]["icon"]]
-        + urlBuilder(
-            forecasts[1]["daily"]["data"][0]["summary"],
-            detailsUrl + "/" + str(tomorrow),
-        ),
-    )
-
-    em.add_field(
-        name="Day After's forecast "
-        + "("
-        + str(forecasts[2]["daily"]["data"][0]["temperatureHigh"])
-        + "/"
-        + str(forecasts[2]["daily"]["data"][0]["temperatureLow"])
-        + "):",
-        value=emojiDict[forecasts[2]["daily"]["data"][0]["icon"]]
-        + urlBuilder(
-            forecasts[2]["daily"]["data"][0]["summary"],
-            detailsUrl + "/" + str(dayAfter),
-        ),
-    )
+    days = ["Today", "Tomorrow", "Day After"]
+    for i, day in enumerate(days):
+        em.add_field(
+            name=day
+            + "'s forecast "
+            + "("
+            + str(wea_response["daily"][i]["temp"]["max"])
+            + "/"
+            + str(wea_response["daily"][i]["temp"]["min"])
+            + "):",
+            value=emojiDict[wea_response["daily"][i]["weather"][0]["icon"]]
+            + " "
+            + wea_response["daily"][i]["weather"][0]["description"].title(),
+        )
 
     general_info("Weather created and returned embed object")
     return em
