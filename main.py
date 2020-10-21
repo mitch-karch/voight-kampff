@@ -326,8 +326,8 @@ async def imgur(ctx, *, request_query: str):
     pass_context=True,
     aliases=["wi", "wiki"],
 )
-async def websterLookup(ctx, *, request_definition: str):
-    command_log_info(ctx.message.author.name, "Webster Definition", request_definition)
+async def wikiLookup(ctx, *, request_definition: str):
+    command_log_info(ctx.message.author.name, "Wikipedia Article", request_definition)
     em = wiki_helper(request_definition)
 
     await ctx.message.channel.send(embed=em)
@@ -354,7 +354,7 @@ async def websterLookup(ctx, *, request_definition: str):
     pass_context=True,
     aliases=["th", "thesaurus", "thes"],
 )
-async def websterLookup(ctx, *, request_definition: str):
+async def thesaurusLookup(ctx, *, request_definition: str):
     command_log_info(ctx.message.author.name, "Thesaurus Lookup", request_definition)
     em = thes_helper(request_definition, webster_thesaurus_token)
 

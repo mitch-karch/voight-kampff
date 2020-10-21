@@ -31,8 +31,8 @@ def payload_post(url, suburl, payload, requestType="POST", raw_return=False):
         return json_response
 
 
-def payload_request(url, payload):
-    return requests.get(url, params=payload).json()
+def payload_request(url, payload={}):
+    return requests.request("GET", url, params=payload).json()
 
 
 def headers_request(url, headers):
