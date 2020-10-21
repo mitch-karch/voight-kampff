@@ -119,7 +119,6 @@ async def on_message(message):
             # newValue = baseunicode + offset
             # emojiCode = "\\U000" + hex(newValue)[2:]
             emojiCode = stupidDict[char]
-            print("Adding:" + emojiCode)
             await message.add_reaction(emojiCode)
 
     elif tempLookup is not False:
