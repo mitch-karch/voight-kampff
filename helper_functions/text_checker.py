@@ -18,6 +18,8 @@ def dictionary_lookup(givenPhrase):
             if entry["probability"] > rollValue:
                 if entry["emoji"]:
                     return (entry["response"], True)
+                elif type(entry["response"]) is list:
+                    return random.choice(entry["response"])
                 return entry["response"]
             return False
     return False
