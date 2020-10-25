@@ -13,6 +13,9 @@ def wiki_helper(request_word):
             t=request_word
         ),
     )
+    if(data["title"] == "Not found."):
+        return errorEmbedBuilder(data["detail"], "Wikipedia")
+
     general_debug("Wikipedia Entry is:" + str(data))
 
     message = length_limiter(data["extract"])
